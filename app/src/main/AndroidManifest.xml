@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sunmoon.withtalk">
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.STTExample">
+        <activity android:name="com.sunmoon.withtalk.FindIDActivity"></activity>
+        <activity android:name="com.sunmoon.withtalk.ResetPWActivity" />
+        <activity android:name="com.sunmoon.withtalk.SignUpActivity" />
+        <activity android:name="com.sunmoon.withtalk.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.sunmoon.withtalk.MainActivity" />
+        <activity android:name="com.sunmoon.withtalk.TTSActivity" />
+        <activity android:name="com.sunmoon.withtalk.STTActivity" />
+    </application>
+
+</manifest>
