@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.STTExample">
+        android:theme="@style/Theme.WithTalk">
         <activity android:name=".ChatroomActivity"></activity>
         <activity android:name=".SearchChatroomActivity" />
         <activity android:name=".AddFriendActivity" />
@@ -28,7 +28,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".STTActivity" />
     </application>
 
 </manifest>

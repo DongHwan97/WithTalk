@@ -1,5 +1,6 @@
 package com.sunmoon.withtalk;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -10,56 +11,40 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.Locale;
 
 
 public class ChatroomListFragment extends Fragment {
 
-    private TextToSpeech tts;
+    Button btn;
 
     public static ChatroomListFragment newInstance() {
         ChatroomListFragment fragment = new ChatroomListFragment();
         return fragment;
     }
-    @Nullable
-    @Override
-    public View getView() {
-        changeFragment();
-        return super.getView();
-    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_chatroom_list, container, false);
-    }
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        setTTS();
-    }
-    // 글자 읽어주기
-    private void setTTS() {
-        tts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status== TextToSpeech.SUCCESS){
-                    tts.setLanguage(Locale.KOREAN);
-                }else{
-                    Log.e("TTS", "Initialization Failed");
-                }
-            }
-        });
-    }
-    public void changeFragment(){
-        tts.speak("채팅 목록 화면", TextToSpeech.QUEUE_FLUSH, null);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_chatroom_list, container, false);
+        btn = (Button) rootView.findViewById(R.id.button12);
+        return rootView;
     }
 
     @Override
-    public void onStop(){
-        if(tts!=null){
-            tts.stop();
-            tts.shutdown();
-        }
-        super.onStop();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveActivity(ChatroomActivity.class);
+            }
+        });
+    }
+
+    private void moveActivity(Class c){
+        Intent intent = new Intent(getContext(), c);
+        startActivity(intent);
     }
 }
