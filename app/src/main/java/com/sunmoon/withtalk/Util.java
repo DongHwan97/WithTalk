@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 public class Util {
     public static Toast toast;
-    private static TextToSpeech tts;
+
 
     public static void startToast(Context context, String msg){
         if (toast != null) {
