@@ -29,7 +29,6 @@ public class TTSFragment extends Fragment {
     ConstraintLayout constView;
     Intent intent;
     SpeechRecognizer speechRecognizer;
-    final int PERMISSION = 1;
 
     public static TTSFragment newInstance() {
         TTSFragment fragment = new TTSFragment();
@@ -51,7 +50,7 @@ public class TTSFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if(Build.VERSION.SDK_INT>=23){
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO},PERMISSION);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO},1);
         }
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getApplicationContext().getPackageName());
@@ -143,6 +142,7 @@ public class TTSFragment extends Fragment {
 
             for(int i = 0; i < matches.size() ; i++){
                 nameView.setText(matches.get(i));
+                moveActivity(ChatActivity.class);
             }
         }
 
@@ -156,4 +156,8 @@ public class TTSFragment extends Fragment {
 
         }
     };
+    private void moveActivity(Class c){
+        Intent intent = new Intent(getContext(),c);
+        startActivity(intent);
+    }
 }
