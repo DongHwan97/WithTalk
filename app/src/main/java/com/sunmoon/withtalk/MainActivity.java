@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(2).setIcon(R.drawable.chat);
         tabLayout.getTabAt(3).setIcon(R.drawable.setting);
         viewPager.setCurrentItem(1);//처음 포지션친구목록으로 설정
+
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -74,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void changeFragment(){
-        tts.speak("미확인메시지 확인 화면", TextToSpeech.QUEUE_FLUSH, null);
-    }
     @Override
     public void onStop(){
         if(tts!=null){

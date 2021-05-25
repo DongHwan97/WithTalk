@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WithTalk">
-        <activity android:name=".ChatroomActivity"></activity>
+        <activity android:name=".ChatActivity"></activity>
         <activity android:name=".SearchChatroomActivity" />
         <activity android:name=".AddFriendActivity" />
         <activity android:name=".SearchFriendActivity" />
