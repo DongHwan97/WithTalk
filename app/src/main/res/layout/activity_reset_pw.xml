@@ -9,16 +9,15 @@
     tools:context=".ResetPWActivity">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="80sp"
-            android:layout_weight="1"
             android:text="비밀번호 재설정"
             android:textSize="36sp" />
     </LinearLayout>
@@ -29,66 +28,30 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/idEditText"
+            android:id="@+id/editNowPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="아이디" />
+            android:hint="현재 비밀번호" />
 
         <EditText
-            android:id="@+id/nameEditText"
+            android:id="@+id/editNewPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="이름" />
+            android:hint="새 비밀번호" />
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/confirmPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="100"
-                android:hint="연락처" />
-
-            <Button
-                android:id="@+id/certNumSendButton"
-                android:layout_width="120sp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20sp"
-                android:layout_marginLeft="20sp"
-                android:layout_weight="1"
-                android:text="인증번호 전송" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/certNum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="100"
-                android:hint="인증번호 입력" />
-
-            <Button
-                android:id="@+id/confirmButton"
-                android:layout_width="120sp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20sp"
-                android:layout_marginLeft="20sp"
-                android:layout_weight="1"
-                android:text="확인" />
-        </LinearLayout>
+            android:layout_weight="0"
+            android:hint="새 비밀번호 확인" />
 
         <Button
-            android:id="@+id/resetPwButton"
+            android:id="@+id/findPwButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50sp"
             android:text="비밀번호 재설정" />
+
     </LinearLayout>
 </LinearLayout>

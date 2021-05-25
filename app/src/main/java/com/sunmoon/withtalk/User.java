@@ -1,10 +1,12 @@
 package com.sunmoon.withtalk;
 
-public class User {
-    String id;
-    String name;
-    String pw;
-    String phoneNo;
+import java.io.Serializable;
+
+public class User implements Serializable {
+    private String id;
+    private String name;
+    private String pw;
+    private String phoneNo;
 
     public String getId() {
         return id;
