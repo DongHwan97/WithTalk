@@ -39,8 +39,8 @@ public class ChatroomListFragment extends Fragment {
                     moveActivity(ChatActivity.class);
                 }
             });
-            nameText = (TextView)list_layout.findViewById(R.id.nameText);
-            dateText = (TextView)list_layout.findViewById(R.id.dateText);
+            nameText = (TextView)list_layout.findViewById(R.id.chatRoomText);
+            dateText = (TextView)list_layout.findViewById(R.id.listDateText);
             nameText.setText(Integer.toString(i)+"채팅방");
             dateText.setText(Integer.toString(i)+"날짜");
             inflateLayout.addView(list_layout);

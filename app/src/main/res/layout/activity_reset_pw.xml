@@ -28,26 +28,26 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editNowPW"
+            android:id="@+id/resetPWNowPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="현재 비밀번호" />
 
         <EditText
-            android:id="@+id/editNewPW"
+            android:id="@+id/resetPWNewPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="새 비밀번호" />
 
         <EditText
-            android:id="@+id/confirmPW"
+            android:id="@+id/resetPWConfirmPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:hint="새 비밀번호 확인" />
 
         <Button
-            android:id="@+id/findPwButton"
+            android:id="@+id/resetPWButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50sp"

@@ -10,17 +10,17 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class SignUpActivity extends AppCompatActivity {
-    EditText idEditText, nameEditText, phoneEditText, pwEditText, confirmEditText;
+    EditText signUpIDText, signUpNameText, signUpPhoneText, signUpPWText, signUpConfirmPW;
     Button signUpButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        idEditText = findViewById(R.id.idEditText);
-        nameEditText = findViewById(R.id.nameEditText);
-        phoneEditText = findViewById(R.id.phoneEditText);
-        pwEditText = findViewById(R.id.pwEditText);
-        confirmEditText = findViewById(R.id.confirmEditText);
+        signUpIDText = findViewById(R.id.signUpIDText);
+        signUpNameText = findViewById(R.id.signUpNameText);
+        signUpPhoneText = findViewById(R.id.signUpPhoneText);
+        signUpPWText = findViewById(R.id.signUpPWText);
+        signUpConfirmPW = findViewById(R.id.signUpConfirmPW);
         signUpButton = findViewById(R.id.signUpButton);
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,11 +33,11 @@ public class SignUpActivity extends AppCompatActivity {
 
     public void signUp(){
         String id, name, phone, pw, confirmPw;
-        id = idEditText.getText().toString();
-        name = nameEditText.getText().toString();
-        phone = phoneEditText.getText().toString();
-        pw = pwEditText.getText().toString();
-        confirmPw = confirmEditText.getText().toString();
+        id = signUpIDText.getText().toString();
+        name = signUpNameText.getText().toString();
+        phone = signUpPhoneText.getText().toString();
+        pw = signUpPWText.getText().toString();
+        confirmPw = signUpConfirmPW.getText().toString();
 
         if((id.length()>6)&&(name.length()>1)&&(phone.length()>10)&&(pw.length()>7)&&(confirmPw.length()>7)) {
             if(!pw.equals(confirmPw)){

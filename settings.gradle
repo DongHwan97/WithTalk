@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "STTExample"
+rootProject.name = "WithTalk"

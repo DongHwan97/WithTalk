@@ -27,7 +27,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editID"
+            android:id="@+id/loginIDText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -35,7 +35,7 @@
             android:inputType="textPersonName" />
 
         <EditText
-            android:id="@+id/editPW"
+            android:id="@+id/loginPWText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -43,7 +43,7 @@
             android:inputType="textPersonName" />
 
         <CheckBox
-            android:id="@+id/autoLogin"
+            android:id="@+id/loginAutoCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -61,7 +61,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/moveResetPW"
+                android:id="@+id/loginMoveFindPW"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
@@ -73,7 +73,7 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
-                android:id="@+id/moveSignUp"
+                android:id="@+id/loginMoveSignUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
@@ -85,14 +85,14 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
-                android:id="@+id/moveFindID"
+                android:id="@+id/loginMoveFindID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="아이디 찾기"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/moveResetPW"
+                app:layout_constraintEnd_toStartOf="@+id/loginMoveFindPW"
                 app:layout_constraintHorizontal_bias="0.605"
-                app:layout_constraintStart_toEndOf="@+id/moveSignUp"
+                app:layout_constraintStart_toEndOf="@+id/loginMoveSignUp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>

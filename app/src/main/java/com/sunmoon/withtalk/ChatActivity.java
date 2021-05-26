@@ -35,8 +35,8 @@ public class ChatActivity extends AppCompatActivity {
     SpeechRecognizer speechRecognizer;
     Intent intent;
     LinearLayout chatLayout;
-    ImageButton sendButton;
-    EditText contentEditText;
+    ImageButton chatSendButton;
+    EditText chatContentText;
     TextView chatRoomText;
 
     int[] index = {0,1,0,1,1,1,1,1,1,1};
@@ -55,8 +55,8 @@ public class ChatActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
 
         chatLayout = findViewById(R.id.chatLayout);
-        sendButton = findViewById(R.id.sendButton);
-        contentEditText = findViewById(R.id.contentEditText);
+        chatSendButton = findViewById(R.id.chatSendButton);
+        chatContentText = findViewById(R.id.chatContentText);
         chatRoomText = findViewById(R.id.chatRoomText);
 
         chatRoomText.setText("박정우");
@@ -97,10 +97,10 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        chatSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                send(contentEditText.getText().toString());
+                send(chatContentText.getText().toString());
             }
         });
     }
@@ -175,8 +175,8 @@ public class ChatActivity extends AppCompatActivity {
                         results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
                 for(int i = 0; i < matches.size() ; i++){
-                    contentEditText.setText(matches.get(i));
-                    send(contentEditText.getText().toString());
+                    chatContentText.setText(matches.get(i));
+                    send(chatContentText.getText().toString());
                 }
             }
 
@@ -192,7 +192,7 @@ public class ChatActivity extends AppCompatActivity {
         };
 
     public String send(String message){
-        Log.e("sendmessage", contentEditText.getText().toString());
+        Log.e("sendmessage", chatContentText.getText().toString());
         return message;
     }
 }
