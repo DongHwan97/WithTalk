@@ -1,5 +1,6 @@
 package com.sunmoon.withtalk;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,7 +22,7 @@ public class FriendListFragment extends Fragment {
     TextView nameText, dateText;
     View list_layout;
     LinearLayout inflateLayout;
-
+    ImageButton searchFriendButton, addFriendButton;
     public static FriendListFragment newInstance() {
         FriendListFragment fragment = new FriendListFragment();
         return fragment;
@@ -30,6 +32,10 @@ public class FriendListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = (ViewGroup)inflater.inflate(R.layout.fragment_friend_list, container, false);
         inflateLayout = (LinearLayout)rootView.findViewById(R.id.friend_layout);
+
+        searchFriendButton = (ImageButton)rootView.findViewById(R.id.searchFriendButton);
+        addFriendButton = (ImageButton)rootView.findViewById(R.id.addFriendButton);
+
 
         for(int i=0;i<10;i++){
             list_layout = inflater.inflate(R.layout.list_layout,inflateLayout,false);
@@ -56,5 +62,25 @@ public class FriendListFragment extends Fragment {
                 return true;
             }
         });
+
+        searchFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveActivity(SearchFriendActivity.class);
+            }
+        });
+
+        addFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveActivity(AddFriendActivity.class);
+            }
+        });
+    }
+
+    private void moveActivity(Class c){//
+
+        Intent intent = new Intent(getActivity(),c);
+        startActivity(intent);
     }
 }

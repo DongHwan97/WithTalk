@@ -51,6 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
             Util.startToast(this, "입력하지 않은 항목이 있습니다.");
         }
     }
+
     private void moveActivity(Class c){
         Intent intent = new Intent(this,c);
         startActivity(intent);
