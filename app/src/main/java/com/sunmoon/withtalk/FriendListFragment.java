@@ -39,8 +39,8 @@ public class FriendListFragment extends Fragment {
 
         for(int i=0;i<10;i++){
             list_layout = inflater.inflate(R.layout.list_layout,inflateLayout,false);
-            nameText = (TextView)list_layout.findViewById(R.id.nameText);
-            dateText = (TextView)list_layout.findViewById(R.id.dateText);
+            nameText = (TextView)list_layout.findViewById(R.id.chatRoomText);
+            dateText = (TextView)list_layout.findViewById(R.id.listDateText);
 
             nameText.setText(Integer.toString(i)+"친구이름");
             dateText.setText("");
