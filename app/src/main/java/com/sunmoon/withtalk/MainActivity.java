@@ -76,11 +76,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStop(){
+    protected void onDestroy() {
+        super.onDestroy();
         if(tts!=null){
             tts.stop();
             tts.shutdown();
         }
-        super.onStop();
     }
 }
