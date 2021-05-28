@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class FindIDActivity extends AppCompatActivity {
     EditText findIDNameText, findIDPhoneText;
     Button findIDButton;
@@ -34,15 +37,28 @@ public class FindIDActivity extends AppCompatActivity {
         String name = findIDNameText.getText().toString();
         String phone = findIDPhoneText.getText().toString();
 
-        //서버에 전송
+        //서버에 보내기
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "\"member\",");
+        sb.append("\"method\":\"findId\",");
+        sb.append("\"name\":\"" + name + "\",");
+        sb.append("\"phoneNo\":\"" + phone + "\"");
+        sb.append("}");
 
-        String result="asd";
-        resultIDText.setText(result);
+        ConnectSocket.sendQueue.offer(sb.toString());
 
-    }
+        //결과 받기
+        String result = ConnectSocket.receiveQueue.poll();
 
-    private void moveActivity(Class c) {
-        Intent intent = new Intent(this, c);
-        startActivity(intent);
+        JsonParser parser = new JsonParser();
+        JsonObject json = (JsonObject)parser.parse(result);
+
+        String method = json.get("method").toString();
+        String id = json.get("id").toString();
+
+        if ("findId".equals(method)) {
+            resultIDText.setText(result);
+        }
     }
 }
