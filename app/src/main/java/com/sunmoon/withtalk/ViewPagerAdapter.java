@@ -18,7 +18,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         switch (position){
             case 0: return TTSFragment.newInstance();
             case 1: return FriendListFragment.newInstance();
-            case 2: return ChatroomListFragment.newInstance();
+            case 2: return ChatRoomListFragment.newInstance();
             case 3: return SettingFragment.newInstance();
             default:return null;
         }

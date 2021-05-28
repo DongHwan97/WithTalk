@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
         loginAutoCheck = (CheckBox) findViewById(R.id.loginAutoCheck);
 
         socket = new ConnectSocket();
-        socket.msg = findViewById(R.id.textView);
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -60,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.loginButton:
-                        moveActivity(MainActivity.class);
+                        login();
                     break;
                 case R.id.loginMoveFindID:
                     moveActivity(FindIDActivity.class);
@@ -88,7 +87,24 @@ public class LoginActivity extends AppCompatActivity {
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);
     }
+    public void login(){
+        String id = loginIDText.getText().toString();
+        String pw = loginPWText.getText().toString();
+        String type="common";
+        String method="login";
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + type + "\",");
+        sb.append("\"method\":\"" + method +"\",");
+        sb.append("\"id\":\""+ id +"\",");
+        sb.append("\"password\":\"" + pw +"\"");
+        sb.append("}");
 
+        ConnectSocket.sendQueue.offer((sb.toString()));
+        Log.e("login: ",sb.toString() );
+        Util.startToast(this, "로그인 성공하셨습니다.");
+        moveActivity(MainActivity.class);
+    }
     private void moveActivity(Class c) {
         Intent intent = new Intent(this, c);
         startActivity(intent);

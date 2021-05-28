@@ -40,9 +40,12 @@ public class ConnectSocket extends Activity {
             public void run() {
                 try {
                     socketChannel = SocketChannel.open();
-                    socketChannel.configureBlocking(true); //블로킹
+                    socketChannel.configureBlocking(true);
                     socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
+
                 } catch (Exception e) {
+
+
                     return;
                 }
                 receive();
@@ -55,6 +58,8 @@ public class ConnectSocket extends Activity {
                 send();
             }
         }).start();
+
+
     }
 
     void receive() {
@@ -79,18 +84,6 @@ public class ConnectSocket extends Activity {
                 // 2. 송신ID == chatRoomID ? 현재 채팅방에 보여줌 : 안보여줌
                 receiveQueue.offer(received_msg);
 
-                Log.d("받은 메시지" , received_msg);
-
-                /*
-                if (msg != null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            msg.setText(data);
-                        }
-                    });
-                }*/
-
             } catch (Exception e) {
                 e.printStackTrace();
                 stopClient();
@@ -104,8 +97,6 @@ public class ConnectSocket extends Activity {
         while(true) {
             try {
                 if (sendQueue.peek() != null) {
-                    Log.d("withtalk", "있어!");
-
                     String data = sendQueue.poll();
                     Charset charset = Charset.forName("UTF-8");
                     ByteBuffer byteBuffer = charset.encode(data);
@@ -128,56 +119,5 @@ public class ConnectSocket extends Activity {
 
         }
 
-    }
-
-    public void setSocket() {
-        try {
-            socketChannel = SocketChannel.open(new InetSocketAddress(SERVER_IP, SERVER_PORT));
-            receiveMSG.start();
-
-        } catch (IOException e) {
-            //e.printStackTrace();
-            if (socketChannel != null) {
-                try {
-                    socketChannel.close();
-
-                } catch (IOException e1) {
-                    //e1.printStackTrace();
-                }
-            }
-        }
-    }
-
-    Thread receiveMSG = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            try {
-                socketChannel.read(buffer);
-                buffer.flip();
-                Log.d("Receive msg: ", buffer.toString());
-                if ( msg != null ) {
-                    msg.setText(buffer.toString());
-                }
-                buffer.clear();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    });
-
-    public void sendMSG(String msg) {
-        byte[] bytes;
-        ByteBuffer buf;
-        try {
-            bytes = msg.getBytes();
-            buf = ByteBuffer.wrap(bytes);
-            this.socketChannel.write(buf);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

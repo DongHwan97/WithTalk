@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,13 +44,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageButton chatSendButton;
     EditText chatContentText;
     TextView chatRoomText;
-
-    int[] index = {0,1,0,1,1,1,1,1,1,1};
-    String[] text = {"a","b", "abc", "sdf", "a","b", "abc", "sdf", "a","b", "abc", "sdf", "a","b", "abc", "sdf"};
-
-    Queue<String> msgList;
-
-    String msg_data;
+    ScrollView scrollView;
 
     Context mContext;
 
@@ -64,7 +59,7 @@ public class ChatActivity extends AppCompatActivity {
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getApplicationContext().getPackageName());
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-
+        scrollView = findViewById(R.id.scrollView);
         chatLayout = findViewById(R.id.chatLayout);
         chatSendButton = findViewById(R.id.chatSendButton);
         chatContentText = findViewById(R.id.chatContentText);
@@ -90,10 +85,18 @@ public class ChatActivity extends AppCompatActivity {
                 return true;
             }
         });
+
         chatSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 send(chatContentText.getText().toString());
+            }
+        });
+
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll((ScrollView.FOCUS_DOWN));
             }
         });
 
@@ -107,7 +110,6 @@ public class ChatActivity extends AppCompatActivity {
                     TextView contentText = new TextView(mContext);
 
                     if (ConnectSocket.receiveQueue.peek() != null) {
-                        Log.d("withtalk", "있어!");
 
                         String data = ConnectSocket.receiveQueue.poll();
                         runOnUiThread(new Runnable() {
@@ -127,6 +129,7 @@ public class ChatActivity extends AppCompatActivity {
                                 }
 
                                 chatLayout.addView(tLayout);
+
                             }
                         });
 
@@ -258,6 +261,6 @@ public class ChatActivity extends AppCompatActivity {
     public void send(String message){
         Log.e("sendmessage", message);
         ConnectSocket.sendQueue.offer("b#"+message);
-
+        chatContentText.setText(null);
     }
 }

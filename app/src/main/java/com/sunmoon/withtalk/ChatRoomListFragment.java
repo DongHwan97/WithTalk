@@ -8,9 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -18,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-public class ChatroomListFragment extends Fragment {
+public class ChatRoomListFragment extends Fragment {
 
     ViewGroup rootView;
     TextView listNameText, listDateText;
@@ -26,8 +24,8 @@ public class ChatroomListFragment extends Fragment {
     LinearLayout inflateLayout;
     ImageButton moveSearchChatRoom;
 
-    public static ChatroomListFragment newInstance() {
-        ChatroomListFragment fragment = new ChatroomListFragment();
+    public static ChatRoomListFragment newInstance() {
+        ChatRoomListFragment fragment = new ChatRoomListFragment();
         return fragment;
     }
 
@@ -70,7 +68,7 @@ public class ChatroomListFragment extends Fragment {
         moveSearchChatRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moveActivity(SearchChatroomActivity.class);
+                moveActivity(SearchChatRoomActivity.class);
             }
         });
     }

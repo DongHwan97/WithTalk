@@ -13,22 +13,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WithTalk">
-        <activity android:name=".ResetPWActivity"></activity>
-        <activity android:name=".ChatActivity" />
-        <activity android:name=".SearchChatroomActivity" />
-        <activity android:name=".AddFriendActivity" />
-        <activity android:name=".SearchFriendActivity" />
-        <activity android:name=".FindIDActivity" />
-        <activity android:name=".FindPWActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".ResetPWActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ChatActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".SearchChatRoomActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AddFriendActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".SearchFriendActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FindIDActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FindPWActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".SignUpActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
