@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import java.util.zip.Inflater;
 
-public class SearchChatroomActivity extends AppCompatActivity {
+public class SearchChatRoomActivity extends AppCompatActivity {
 
     ImageButton searchChatRoomButton;
     EditText searchChatRoomEdit;

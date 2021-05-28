@@ -27,8 +27,8 @@ public class ConnectSocket extends Activity {
     String received_msg;
 
     public static String chatRoomID;
-    public static Queue<String> toChatRoomMsgList = new LinkedList<>();
-    public static Queue<String> fromChatRoomMsgList = new LinkedList<>();
+    public static Queue<String> receiveQueue = new LinkedList<>();
+    public static Queue<String> sendQueue = new LinkedList<>();
 
     ConnectSocket() {
         this.startClient();
@@ -41,7 +41,7 @@ public class ConnectSocket extends Activity {
                 try {
                     socketChannel = SocketChannel.open();
                     socketChannel.configureBlocking(true);
-                    socketChannel.connect(new InetSocketAddress("192.168.219.162", 1428));
+                    socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
 
                 } catch (Exception e) {
 
@@ -82,21 +82,7 @@ public class ConnectSocket extends Activity {
                 // 1. 내부 DB에 넣기
 
                 // 2. 송신ID == chatRoomID ? 현재 채팅방에 보여줌 : 안보여줌
-                toChatRoomMsgList.offer(received_msg);
-
-
-                Log.d("받은 메시지" , received_msg);
-
-                /*
-                if (msg != null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            msg.setText(data);
-                        }
-                    });
-                }*/
-
+                receiveQueue.offer(received_msg);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -110,10 +96,8 @@ public class ConnectSocket extends Activity {
     void send() {
         while(true) {
             try {
-                if (fromChatRoomMsgList.peek() != null) {
-                    Log.d("withtalk", "있어!");
-
-                    String data = fromChatRoomMsgList.poll();
+                if (sendQueue.peek() != null) {
+                    String data = sendQueue.poll();
                     Charset charset = Charset.forName("UTF-8");
                     ByteBuffer byteBuffer = charset.encode(data);
                     socketChannel.write(byteBuffer);
@@ -135,60 +119,5 @@ public class ConnectSocket extends Activity {
 
         }
 
-    }
-
-
-
-    public void setSocket() {
-        try {
-            socketChannel = SocketChannel.open(new InetSocketAddress(SERVER_IP, SERVER_PORT));
-            receiveMSG.start();
-
-        } catch (IOException e) {
-            //e.printStackTrace();
-            if (socketChannel != null) {
-                try {
-                    socketChannel.close();
-
-                } catch (IOException e1) {
-                    //e1.printStackTrace();
-                }
-            }
-        }
-    }
-
-
-
-    Thread receiveMSG = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            try {
-                socketChannel.read(buffer);
-                buffer.flip();
-                Log.d("Receive msg: ", buffer.toString());
-                if ( msg != null ) {
-                    msg.setText(buffer.toString());
-                }
-                buffer.clear();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    });
-
-    public void sendMSG(String msg) {
-        byte[] bytes;
-        ByteBuffer buf;
-        try {
-            bytes = msg.getBytes();
-            buf = ByteBuffer.wrap(bytes);
-            this.socketChannel.write(buf);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

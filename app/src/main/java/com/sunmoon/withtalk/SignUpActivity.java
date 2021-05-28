@@ -38,13 +38,26 @@ public class SignUpActivity extends AppCompatActivity {
         phone = signUpPhoneText.getText().toString();
         pw = signUpPWText.getText().toString();
         confirmPw = signUpConfirmPW.getText().toString();
+        String type="common";
+        String method="signUp";
+        StringBuilder sb = new StringBuilder();
 
         if((id.length()>6)&&(name.length()>1)&&(phone.length()>10)&&(pw.length()>7)&&(confirmPw.length()>7)) {
             if(!pw.equals(confirmPw)){
                 Util.startToast(this, "비밀번호가 일치하지 않습니다.");
             }else{
                 //회원가입 메시지 전송
+                sb.append("{");
+                sb.append("\"type\":\"" + type + "\",");
+                sb.append("\"method\":\"" + method +"\",");
+                sb.append("\"id\":\""+ id +"\",");
+                sb.append("\"name\":\""+ name +"\",");
+                sb.append("\"phone\":\""+ phone +"\",");
+                sb.append("\"password\":\" " + pw +"\"");
+                sb.append("}");
 
+                ConnectSocket.sendQueue.offer((sb.toString()));
+                Log.e("signUp: ",sb.toString() );
                 Util.startToast(this, "회원가입에 성공하셨습니다.");
                 moveActivity(LoginActivity.class);
             }
