@@ -5,6 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.fonts.Font;
@@ -29,6 +30,10 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 //전송 구현 스레드 구현
 public class ChatActivity extends AppCompatActivity {
 
@@ -42,14 +47,20 @@ public class ChatActivity extends AppCompatActivity {
     int[] index = {0,1,0,1,1,1,1,1,1,1};
     String[] text = {"a","b", "abc", "sdf", "a","b", "abc", "sdf", "a","b", "abc", "sdf", "a","b", "abc", "sdf"};
 
+    Queue<String> msgList;
+
+    String msg_data;
+
+    Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        mContext = this;
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO}, 1);
-        }
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO}, 1);
+
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getApplicationContext().getPackageName());
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
@@ -60,28 +71,11 @@ public class ChatActivity extends AppCompatActivity {
         chatRoomText = findViewById(R.id.chatRoomText);
 
         chatRoomText.setText("박정우");
+        ConnectSocket.chatRoomID = chatRoomText.getText().toString();
 
-        for (int i = 0; i < index.length; i++) {
-            LinearLayout tLayout = new LinearLayout(this);
+        // 내부DB가져옴
 
-            TextView dateText = new TextView(this);
-            TextView contentText = new TextView(this);
 
-            dateText.setText("00:09");
-            contentText.setText(text[i]);
-
-            if (index[i] == 1) {
-                tLayout.setGravity(Gravity.RIGHT);
-                tLayout.addView(dateText);
-                tLayout.addView(contentText);
-
-            } else {
-                tLayout.addView(contentText);
-                tLayout.addView(dateText);
-            }
-
-            chatLayout.addView(tLayout);
-        }
 
         chatLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -96,14 +90,84 @@ public class ChatActivity extends AppCompatActivity {
                 return true;
             }
         });
-
         chatSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 send(chatContentText.getText().toString());
             }
         });
-    }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    LinearLayout tLayout = new LinearLayout(mContext);
+
+                    TextView dateText = new TextView(mContext);
+                    TextView contentText = new TextView(mContext);
+
+                    if (ConnectSocket.toChatRoomMsgList.peek() != null) {
+                        Log.d("withtalk", "있어!");
+
+                        String data = ConnectSocket.toChatRoomMsgList.poll();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dateText.setText("00:09");
+                                contentText.setText(data.split("#")[1]);
+
+                                if (data.split("#")[0].charAt(0) == 'b') {
+                                    tLayout.setGravity(Gravity.RIGHT);
+                                    tLayout.addView(dateText);
+                                    tLayout.addView(contentText);
+
+                                } else {
+                                    tLayout.addView(contentText);
+                                    tLayout.addView(dateText);
+                                }
+
+                                chatLayout.addView(tLayout);
+                            }
+                        });
+
+                    }
+                }
+
+                /*
+                while ((msg_data = msgList.poll()) != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            LinearLayout tLayout = new LinearLayout(mContext);
+
+                            TextView dateText = new TextView(mContext);
+                            TextView contentText = new TextView(mContext);
+
+                            dateText.setText("00:09");
+                            contentText.setText(msg_data);
+
+                            //msg_data = "a#안녕" -> 상대방
+                            // "b#굳" -> 내꺼
+                            if (msg_data.split("#")[0].charAt(0) == 'b') {
+                                tLayout.setGravity(Gravity.RIGHT);
+                                tLayout.addView(dateText);
+                                tLayout.addView(contentText);
+
+                            } else {
+                                tLayout.addView(contentText);
+                                tLayout.addView(dateText);
+                            }
+
+                            chatLayout.addView(tLayout);
+                        }
+                    });
+                }
+                */
+            }
+        }).start();
+
+
+        }
         RecognitionListener recognitionListener = new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
@@ -191,8 +255,9 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
 
-    public String send(String message){
-        Log.e("sendmessage", chatContentText.getText().toString());
-        return message;
+    public void send(String message){
+        Log.e("sendmessage", message);
+        ConnectSocket.fromChatRoomMsgList.offer("b#"+message);
+
     }
 }

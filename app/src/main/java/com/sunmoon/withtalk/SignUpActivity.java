@@ -44,6 +44,7 @@ public class SignUpActivity extends AppCompatActivity {
                 Util.startToast(this, "비밀번호가 일치하지 않습니다.");
             }else{
                 //회원가입 메시지 전송
+
                 Util.startToast(this, "회원가입에 성공하셨습니다.");
                 moveActivity(LoginActivity.class);
             }
