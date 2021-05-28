@@ -28,22 +28,31 @@
 
 
         <EditText
-            android:id="@+id/editID"
+            android:id="@+id/findIDNameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="이름" />
 
         <EditText
-            android:id="@+id/editPhone"
+            android:id="@+id/findIDPhoneText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="연락처" />
 
+        <TextView
+            android:id="@+id/resultIDText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="80dp"
+            android:hint="결과"
+            android:textSize="24sp" />
+
         <Button
             android:id="@+id/findIDButton"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80sp"
+            android:layout_gravity="center"
             android:text="아이디 찾기" />
     </LinearLayout>
 

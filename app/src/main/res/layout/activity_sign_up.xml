@@ -29,31 +29,31 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editNowPW"
+            android:id="@+id/signUpIDText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="아이디" />
 
         <EditText
-            android:id="@+id/editPhone"
+            android:id="@+id/signUpPhoneText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="연락처 ( - 제외 )" />
 
         <EditText
-            android:id="@+id/editNewPW"
+            android:id="@+id/signUpNameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="이름" />
 
         <EditText
-            android:id="@+id/pw"
+            android:id="@+id/signUpPWText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="비밀번호" />
 
         <EditText
-            android:id="@+id/confirmPW"
+            android:id="@+id/signUpConfirmPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="비밀번호 확인" />

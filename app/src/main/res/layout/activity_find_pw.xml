@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".ResetPWActivity">
+    tools:context=".FindPWActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,13 +28,13 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editNowPW"
+            android:id="@+id/findPWIDText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="아이디" />
 
         <EditText
-            android:id="@+id/editNewPW"
+            android:id="@+id/findPWNameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="이름" />
@@ -45,14 +45,14 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/editPhone"
+                android:id="@+id/findPWPhoneText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="100"
                 android:hint="연락처" />
 
             <Button
-                android:id="@+id/certNumSendButton"
+                android:id="@+id/findPWCertNumSendButton"
                 android:layout_width="120sp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20sp"
@@ -67,14 +67,14 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/confirmPW"
+                android:id="@+id/findPWCertNumText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="100"
                 android:hint="인증번호 입력" />
 
             <Button
-                android:id="@+id/confirmButton"
+                android:id="@+id/findPWConfirmButton"
                 android:layout_width="120sp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20sp"
@@ -84,7 +84,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/findPwButton"
+            android:id="@+id/findPWButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50sp"
