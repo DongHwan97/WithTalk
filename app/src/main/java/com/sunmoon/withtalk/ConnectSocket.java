@@ -27,8 +27,8 @@ public class ConnectSocket extends Activity {
     String received_msg;
 
     public static String chatRoomID;
-    public static Queue<String> toChatRoomMsgList = new LinkedList<>();
-    public static Queue<String> fromChatRoomMsgList = new LinkedList<>();
+    public static Queue<String> receiveQueue = new LinkedList<>();
+    public static Queue<String> sendQueue = new LinkedList<>();
 
     ConnectSocket() {
         this.startClient();
@@ -40,12 +40,9 @@ public class ConnectSocket extends Activity {
             public void run() {
                 try {
                     socketChannel = SocketChannel.open();
-                    socketChannel.configureBlocking(true);
-                    socketChannel.connect(new InetSocketAddress("192.168.219.162", 1428));
-
+                    socketChannel.configureBlocking(true); //블로킹
+                    socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
                 } catch (Exception e) {
-
-
                     return;
                 }
                 receive();
@@ -58,8 +55,6 @@ public class ConnectSocket extends Activity {
                 send();
             }
         }).start();
-
-
     }
 
     void receive() {
@@ -82,8 +77,7 @@ public class ConnectSocket extends Activity {
                 // 1. 내부 DB에 넣기
 
                 // 2. 송신ID == chatRoomID ? 현재 채팅방에 보여줌 : 안보여줌
-                toChatRoomMsgList.offer(received_msg);
-
+                receiveQueue.offer(received_msg);
 
                 Log.d("받은 메시지" , received_msg);
 
@@ -97,7 +91,6 @@ public class ConnectSocket extends Activity {
                     });
                 }*/
 
-
             } catch (Exception e) {
                 e.printStackTrace();
                 stopClient();
@@ -110,10 +103,10 @@ public class ConnectSocket extends Activity {
     void send() {
         while(true) {
             try {
-                if (fromChatRoomMsgList.peek() != null) {
+                if (sendQueue.peek() != null) {
                     Log.d("withtalk", "있어!");
 
-                    String data = fromChatRoomMsgList.poll();
+                    String data = sendQueue.poll();
                     Charset charset = Charset.forName("UTF-8");
                     ByteBuffer byteBuffer = charset.encode(data);
                     socketChannel.write(byteBuffer);
@@ -137,8 +130,6 @@ public class ConnectSocket extends Activity {
 
     }
 
-
-
     public void setSocket() {
         try {
             socketChannel = SocketChannel.open(new InetSocketAddress(SERVER_IP, SERVER_PORT));
@@ -156,8 +147,6 @@ public class ConnectSocket extends Activity {
             }
         }
     }
-
-
 
     Thread receiveMSG = new Thread(new Runnable() {
         @Override

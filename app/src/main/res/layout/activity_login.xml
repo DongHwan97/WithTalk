@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="비밀번호"
-            android:inputType="textPersonName" />
+            android:inputType="textPassword" />
 
         <CheckBox
             android:id="@+id/loginAutoCheck"
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
                 android:layout_marginRight="50dp"
-                android:text="비밀번호찾기"
+                android:text="비밀번호 찾기"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

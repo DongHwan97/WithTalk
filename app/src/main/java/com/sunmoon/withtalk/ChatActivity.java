@@ -106,10 +106,10 @@ public class ChatActivity extends AppCompatActivity {
                     TextView dateText = new TextView(mContext);
                     TextView contentText = new TextView(mContext);
 
-                    if (ConnectSocket.toChatRoomMsgList.peek() != null) {
+                    if (ConnectSocket.receiveQueue.peek() != null) {
                         Log.d("withtalk", "있어!");
 
-                        String data = ConnectSocket.toChatRoomMsgList.poll();
+                        String data = ConnectSocket.receiveQueue.poll();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -257,7 +257,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void send(String message){
         Log.e("sendmessage", message);
-        ConnectSocket.fromChatRoomMsgList.offer("b#"+message);
+        ConnectSocket.sendQueue.offer("b#"+message);
 
     }
 }

@@ -28,15 +28,10 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/resetPWNowPW"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="현재 비밀번호" />
-
-        <EditText
             android:id="@+id/resetPWNewPW"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             android:hint="새 비밀번호" />
 
         <EditText
@@ -44,6 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:inputType="textPassword"
             android:hint="새 비밀번호 확인" />
 
         <Button
