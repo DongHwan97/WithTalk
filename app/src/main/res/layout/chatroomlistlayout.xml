@@ -6,7 +6,7 @@
     android:layout_height="100dp">
 
     <TextView
-        android:id="@+id/listNameText"
+        android:id="@+id/chatRoomNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/listDateText"
+        android:id="@+id/chatRoomDateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"

@@ -88,6 +88,7 @@ public class FriendListFragment extends Fragment {
                          case 0: moveActivity(ChatActivity.class);
                              break;
                          case 1: deleteFriend();
+                             Util.startToast(getContext(),"친구삭제 되었습니다");
                              break;
                      }
             }
