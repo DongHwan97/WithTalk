@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="친구 이름"
+            android:hint="연락처"
             android:inputType="textPersonName" />
 
         <ImageButton

@@ -21,7 +21,6 @@ public class FindPWActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_pw);
-        Bundle bundle = new Bundle();
         findPWIDText = findViewById(R.id.findPWIDText);
         findPWNameText = findViewById(R.id.findPWNameText);
         findPWPhoneText = findViewById(R.id.findPWPhoneText);

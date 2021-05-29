@@ -15,6 +15,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 public class SearchFriendActivity extends AppCompatActivity {
 
     ImageButton searchFriendButton;
@@ -48,14 +51,48 @@ public class SearchFriendActivity extends AppCompatActivity {
     }
 
     public void searchFriend(){
-        inflateLayout.removeView(listLayout);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        searchFriendEdit.getText().toString();//검색 데이터 전송 받고
+        String friendPhoneNo = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
+        if ((friendPhoneNo.length() > 10) ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            sb.append("\"type\":\"" + "friend" + "\",");
+            sb.append("\"method\":\"" + "searchFriend" + "\",");
+            sb.append("\"phoneNo\":\"" + friendPhoneNo + "\",");
+            sb.append("}");
 
-        listLayout =  inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
-        TextView friendNameText = (TextView)listLayout.findViewById(R.id.friendNameText);
-        friendNameText.setText("친구");
-        inflateLayout.addView(listLayout);
+            ConnectSocket.sendQueue.offer((sb.toString()));
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 결과 받기
+            String result = ConnectSocket.receiveQueue.poll();
+
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(result);
+
+            String method = json.getAsJsonObject().get("method").toString();
+            String status = json.getAsJsonObject().get("status").toString();
+            String id = json.getAsJsonObject().get("id").toString();
+            String name = json.getAsJsonObject().get("name").toString();
+            String phoneNo = json.getAsJsonObject().get("phoneNo").toString();
+
+            if ("\"searchFriend\"".equals(method) && "\"r200\"".equals(status)) {
+                Util.startToast(this, "로그인 성공하셨습니다.");
+                inflateLayout.removeView(listLayout);
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                listLayout =  inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+                TextView friendNameText = (TextView)listLayout.findViewById(R.id.friendNameText);
+                friendNameText.setText(name);
+                inflateLayout.addView(listLayout);
+
+            } else {
+                Util.startToast(this, "에헤헤 뵹신 !");
+            }
+        }else{
+            Util.startToast(this, "연락처를 입력해 주세요");
+        }
     }
 
     public void showDialog(){
