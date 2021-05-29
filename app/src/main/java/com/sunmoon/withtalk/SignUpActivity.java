@@ -72,9 +72,11 @@ public class SignUpActivity extends AppCompatActivity {
                 JsonObject jsonObject = (JsonObject) parser.parse(msg);
 
                 String method = jsonObject.get("method").toString();
+                Log.e("signUp: ", method);
                 String status = jsonObject.get("status").toString();
+                Log.e("signUp: ", status);
 
-                if ("signUp".equals(method) && "r200".equals(status)) {
+                if ("\"signUp\"".equals(method) && "\"r200\"".equals(status)) {
                     Util.startToast(this, "회원가입에 성공하셨습니다.");
                     moveActivity(LoginActivity.class);
                 }

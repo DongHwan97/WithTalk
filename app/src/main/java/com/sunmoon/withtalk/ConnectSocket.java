@@ -14,15 +14,11 @@ import java.util.List;
 import java.util.Queue;
 
 public class ConnectSocket extends Activity {
-    public static final String SERVER_IP = "192.168.25.24";
+    public static final String SERVER_IP = "192.168.25.55";
     public static final int SERVER_PORT = 5050;
     public static final int READ_BUFFER = 1024;
 
-
     public static SocketChannel socketChannel;
-    ByteBuffer buffer = ByteBuffer.allocate(READ_BUFFER);
-
-    TextView msg;
 
     String received_msg;
 
@@ -42,10 +38,7 @@ public class ConnectSocket extends Activity {
                     socketChannel = SocketChannel.open();
                     socketChannel.configureBlocking(true);
                     socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
-
                 } catch (Exception e) {
-
-
                     return;
                 }
                 receive();
@@ -58,14 +51,12 @@ public class ConnectSocket extends Activity {
                 send();
             }
         }).start();
-
-
     }
 
     void receive() {
         while (true) {
             try {
-                ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                ByteBuffer byteBuffer = ByteBuffer.allocate(READ_BUFFER);
 
                 int byteCount = socketChannel.read(byteBuffer);
 
@@ -90,7 +81,6 @@ public class ConnectSocket extends Activity {
                 break;
             }
         }
-
     }
 
     void send() {
@@ -106,7 +96,6 @@ public class ConnectSocket extends Activity {
                 stopClient();
             }
         }
-
     }
 
     void stopClient() {
@@ -116,8 +105,6 @@ public class ConnectSocket extends Activity {
             }
         } catch (IOException e) {
             e.printStackTrace();
-
         }
-
     }
 }
