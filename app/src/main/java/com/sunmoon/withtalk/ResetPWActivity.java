@@ -39,7 +39,7 @@ public class ResetPWActivity extends Activity {
         Intent intent = getIntent();
         String id = (String) intent.getSerializableExtra("id");
         Log.e("auth: ", "로그입니다"+id);
-        if (pw.equals(confirmPw)) {
+        if (pw.equals(confirmPw)&&(pw.length()>7)) {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"member\",");

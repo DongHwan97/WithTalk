@@ -38,38 +38,44 @@ public class FindIDActivity extends AppCompatActivity {
     public void findID(){
         String name = findIDNameText.getText().toString();
         String phone = findIDPhoneText.getText().toString();
+        if ((name.length() > 1) && (phone.length() > 10)) {
+            //서버에 보내기
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            sb.append("\"type\":\"member\",");
+            sb.append("\"method\":\"findId\",");
+            sb.append("\"name\":\"" + name + "\",");
+            sb.append("\"phoneNo\":\"" + phone + "\"");
+            sb.append("}");
 
-        //서버에 보내기
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"member\",");
-        sb.append("\"method\":\"findId\",");
-        sb.append("\"name\":\"" + name + "\",");
-        sb.append("\"phoneNo\":\"" + phone + "\"");
-        sb.append("}");
+            Log.d("++++++++++++++++", sb.toString());
+            ConnectSocket.sendQueue.offer(sb.toString());
 
-        Log.d("++++++++++++++++", sb.toString());
-        ConnectSocket.sendQueue.offer(sb.toString());
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //결과 받기
-        String result = ConnectSocket.receiveQueue.poll();
+            //결과 받기
+            String result = ConnectSocket.receiveQueue.poll();
 
 //        Log.d("----------------", result);
 
-        JsonParser parser = new JsonParser();
-        JsonElement json = parser.parse(result);
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(result);
 
-        String method = json.getAsJsonObject().get("method").toString();
-        String id = json.getAsJsonObject().get("id").toString();
+            String method = json.getAsJsonObject().get("method").toString();
+            String status = json.getAsJsonObject().get("status").toString();
+            String id = json.getAsJsonObject().get("id").toString();
 
-        if ("\"findId\"".equals(method)) {
-            resultIDText.setText("아이디는 " + id + "입니다.");
+            if ("\"findId\"".equals(method) && "\"r200\"".equals(status)) {
+                resultIDText.setText("아이디는 " + id + "입니다.");
+            }else{
+                Util.startToast(this,"회원가입되지 않은 사용자입니다.");
+            }
+        }else{
+            Util.startToast(this,"입력하지 않은 정보가 있습니다.");
         }
     }
 }

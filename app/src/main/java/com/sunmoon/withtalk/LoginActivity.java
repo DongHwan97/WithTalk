@@ -90,20 +90,43 @@ public class LoginActivity extends AppCompatActivity {
     public void login(){
         String id = loginIDText.getText().toString();
         String pw = loginPWText.getText().toString();
-        String type="common";
-        String method="login";
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"" + type + "\",");
-        sb.append("\"method\":\"" + method +"\",");
-        sb.append("\"id\":\""+ id +"\",");
-        sb.append("\"password\":\"" + pw +"\"");
-        sb.append("}");
 
-        ConnectSocket.sendQueue.offer((sb.toString()));
-        Log.e("login: ",sb.toString() );
-        Util.startToast(this, "로그인 성공하셨습니다.");
-        moveActivity(MainActivity.class);
+        if ((id.length() > 6) && (pw.length() > 7)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            sb.append("\"type\":\"" + "common" + "\",");
+            sb.append("\"method\":\"" + "login" + "\",");
+            sb.append("\"id\":\"" + id + "\",");
+            sb.append("\"password\":\"" + pw + "\"");
+            sb.append("}");
+
+            ConnectSocket.sendQueue.offer((sb.toString()));
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 결과 받기
+            String result = ConnectSocket.receiveQueue.poll();
+
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(result);
+
+            String method = json.getAsJsonObject().get("method").toString();
+            String status = json.getAsJsonObject().get("status").toString();
+
+            if ("\"login\"".equals(method) && "\"r200\"".equals(status)) {
+                Util.startToast(this, "로그인 성공하셨습니다.");
+
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+            } else {
+                Util.startToast(this, "에헤헤 뵹신 !");
+            }
+        }else{
+            Util.startToast(this, "입력하지 않은 정보가 있습니다.");
+        }
     }
     private void moveActivity(Class c) {
         Intent intent = new Intent(this, c);
