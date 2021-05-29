@@ -42,7 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
         String pw = signUpPWText.getText().toString();
         String confirmPw = signUpConfirmPW.getText().toString();
 
-        if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10) && (pw.length() > 7) && (confirmPw.length() > 7)) {
+        if ((id.length() > 6) && (name.length() > 1) && (phone.length() > 10) && (pw.length() > 7) && (confirmPw.length() > 7)) {
             if (!pw.equals(confirmPw)) {
                 Util.startToast(this, "비밀번호가 일치하지 않습니다.");
             } else {
@@ -54,7 +54,7 @@ public class SignUpActivity extends AppCompatActivity {
                 sb.append("\"id\":\"" + id + "\",");
                 sb.append("\"name\":\"" + name + "\",");
                 sb.append("\"password\":\"" + pw + "\",");
-                sb.append("\"phone_no\":\"" + phone + "\"");
+                sb.append("\"phoneNo\":\"" + phone + "\"");
                 sb.append("}");
 
                 ConnectSocket.sendQueue.offer(sb.toString());

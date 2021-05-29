@@ -39,55 +39,16 @@
             android:layout_height="wrap_content"
             android:hint="이름" />
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/findPWPhoneText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/findPWPhoneText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="100"
-                android:hint="연락처" />
-
-            <Button
-                android:id="@+id/findPWCertNumSendButton"
-                android:layout_width="120sp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20sp"
-                android:layout_marginLeft="20sp"
-                android:layout_weight="1"
-                android:text="인증번호 전송" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/findPWCertNumText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="100"
-                android:hint="인증번호 입력" />
-
-            <Button
-                android:id="@+id/findPWConfirmButton"
-                android:layout_width="120sp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20sp"
-                android:layout_marginLeft="20sp"
-                android:layout_weight="1"
-                android:text="확인" />
-        </LinearLayout>
+            android:hint="연락처" />
 
         <Button
             android:id="@+id/findPWButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50sp"
             android:text="비밀번호 찾기" />
     </LinearLayout>
 </LinearLayout>

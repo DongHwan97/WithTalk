@@ -28,17 +28,16 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/resetPWNewPW"
+            android:id="@+id/newPWText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="새 비밀번호"
             android:inputType="textPassword" />
 
         <EditText
-            android:id="@+id/resetPWConfirmPW"
+            android:id="@+id/newPWConfirmText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
             android:hint="새 비밀번호 확인"
             android:inputType="textPassword" />
 
