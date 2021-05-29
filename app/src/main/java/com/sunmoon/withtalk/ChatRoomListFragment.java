@@ -11,9 +11,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class ChatRoomListFragment extends Fragment {
@@ -36,9 +38,9 @@ public class ChatRoomListFragment extends Fragment {
 
         moveSearchChatRoom = (ImageButton)rootView.findViewById(R.id.moveSearchChatRoom);
         for(int i=0;i<10;i++){
-            list_layout = inflater.inflate(R.layout.chatlistlayout,inflateLayout,false);
-            listNameText = (TextView)list_layout.findViewById(R.id.listNameText);
-            listDateText = (TextView)list_layout.findViewById(R.id.listDateText);
+            list_layout = inflater.inflate(R.layout.chatroomlistlayout,inflateLayout,false);
+            listNameText = (TextView)list_layout.findViewById(R.id.chatRoomNameText);
+            listDateText = (TextView)list_layout.findViewById(R.id.chatRoomDateText);
             listNameText.setText(Integer.toString(i)+"채팅방");
             listDateText.setText(Integer.toString(i)+"날짜");
             inflateLayout.addView(list_layout);
@@ -91,7 +93,18 @@ public class ChatRoomListFragment extends Fragment {
         chatRoomBuilder.show();
     }
     public void changeChatRoomName(){
-
+        final EditText editText = new EditText(getContext());
+        AlertDialog.Builder changeChatRoomNameDialog = new AlertDialog.Builder(getContext());
+        changeChatRoomNameDialog.setTitle("대화방 이름 변경");
+        changeChatRoomNameDialog.setView(editText);
+        changeChatRoomNameDialog.setPositiveButton("입력", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                listNameText.setText(editText.getText().toString());
+                Util.startToast(getContext(),"변경되었습니다");
+            }
+        });
+        changeChatRoomNameDialog.show();
     }
     public void deleteChatRoom(){
 
