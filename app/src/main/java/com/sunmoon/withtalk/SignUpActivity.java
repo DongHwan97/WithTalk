@@ -70,7 +70,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                 JsonParser parser = new JsonParser();
                 JsonObject jsonObject = (JsonObject) parser.parse(msg);
-
+                Log.e("signUp: ", msg);
                 String method = jsonObject.get("method").toString();
                 Log.e("signUp: ", method);
                 String status = jsonObject.get("status").toString();

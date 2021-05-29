@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class FindIDActivity extends AppCompatActivity {
@@ -48,7 +47,6 @@ public class FindIDActivity extends AppCompatActivity {
         sb.append("\"phoneNo\":\"" + phone + "\"");
         sb.append("}");
 
-        Log.d("++++++++++++++++", sb.toString());
         ConnectSocket.sendQueue.offer(sb.toString());
 
         try {
@@ -59,8 +57,6 @@ public class FindIDActivity extends AppCompatActivity {
 
         //결과 받기
         String result = ConnectSocket.receiveQueue.poll();
-
-//        Log.d("----------------", result);
 
         JsonParser parser = new JsonParser();
         JsonElement json = parser.parse(result);
