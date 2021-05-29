@@ -28,16 +28,4 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return 4;
     }
-/*
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-        switch (position){
-            case 0: return "TTS";
-            case 1: return "Friend";
-            case 2: return "Chat";
-            case 3: return "Setting";
-            default:return null;
-        }
-    }*/
 }

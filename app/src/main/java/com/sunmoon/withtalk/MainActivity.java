@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -18,11 +19,14 @@ public class MainActivity extends AppCompatActivity {
 
     private FragmentPagerAdapter fragmentPagerAdapter;
     public TextToSpeech tts;
+    Intent intent = getIntent();
+    public static String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Intent intent = getIntent();
+        id = (String)intent.getSerializableExtra("id");
         //뷰페이저 세팅
         ViewPager viewPager = findViewById(R.id.viewPager);
         fragmentPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -56,7 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                Intent intent = getIntent();
+                String id = (String) intent.getSerializableExtra("id");
+                Bundle bundle = new Bundle();
                 switch (position){
+
                     case 0: tts.speak("메시지 확인", TextToSpeech.QUEUE_FLUSH, null);
                             break;
                     case 1: tts.speak("친구목록", TextToSpeech.QUEUE_FLUSH, null);

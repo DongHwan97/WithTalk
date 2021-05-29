@@ -99,7 +99,9 @@ public class FriendListFragment extends Fragment {
     public void deleteFriend(){
 
     }
-
+    public void showFriendList(){
+        
+    }
     private void moveActivity(Class c){//
 
         Intent intent = new Intent(getActivity(),c);
