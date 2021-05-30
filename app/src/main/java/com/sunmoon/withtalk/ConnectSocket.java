@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Queue;
 
 public class ConnectSocket extends Activity {
-    public static final String SERVER_IP = "192.168.25.55";
+    public static final String SERVER_IP = "192.168.25.24";
     public static final int SERVER_PORT = 5050;
     public static final int READ_BUFFER = 1024;
 

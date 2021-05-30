@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     public TextToSpeech tts;
     Intent intent = getIntent();
     public static String id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

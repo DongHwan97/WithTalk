@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.graphics.fonts.Font;
 import android.media.Image;
@@ -47,6 +48,9 @@ public class ChatActivity extends AppCompatActivity {
     ScrollView scrollView;
 
     Context mContext;
+
+    DatabaseHelper dbHelper;
+    SQLiteDatabase sqlDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
