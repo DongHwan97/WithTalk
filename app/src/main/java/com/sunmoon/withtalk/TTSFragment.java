@@ -158,8 +158,10 @@ public class TTSFragment extends Fragment {
 
         }
     };
-    private void moveActivity(Class c){
+
+    private void moveActivity(Class c){//이동
         Intent intent = new Intent(getContext(),c);
         startActivity(intent);
     }
+
 }

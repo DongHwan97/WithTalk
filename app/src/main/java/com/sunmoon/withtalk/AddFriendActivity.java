@@ -3,7 +3,6 @@ package com.sunmoon.withtalk;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import org.w3c.dom.Text;
 
 public class AddFriendActivity extends AppCompatActivity {
 
@@ -64,7 +62,6 @@ public class AddFriendActivity extends AppCompatActivity {
             String result = ConnectSocket.receiveQueue.poll();
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(result);
-
             String method = json.getAsJsonObject().get("method").toString();
             String status = json.getAsJsonObject().get("status").toString();
             String id = json.getAsJsonObject().get("id").toString();
@@ -72,7 +69,6 @@ public class AddFriendActivity extends AppCompatActivity {
             String phoneNo = json.getAsJsonObject().get("phoneNo").toString();
             name = name.substring(1,name.length()-1);
 
-            Log.e( "searchFriend: ","이름:"+ name );
             if ("\"searchFriend\"".equals(method) && "\"r200\"".equals(status)) {
                 inflateLayout.removeView(listLayout);
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -82,22 +78,45 @@ public class AddFriendActivity extends AppCompatActivity {
                 friendAddButton.setVisibility(View.VISIBLE);
                 friendNameText.setText(name);
                 inflateLayout.addView(listLayout);
-friendAddButton.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        addFriend();
-    }
-});
+
+            friendAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {//친구추가
+
+                StringBuilder builder = new StringBuilder();
+                builder.append("{");
+                builder.append("\"type\":\"" + "friend" + "\",");
+                builder.append("\"method\":\"" + "insertFriend" + "\",");
+                builder.append("\"memberId\":\"" + MainActivity.id + "\",");
+                builder.append("\"friendId\":\"" + id.substring(1,id.length()-1) + "\",");
+                builder.append("}");
+
+                ConnectSocket.sendQueue.offer((builder.toString()));
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                String insertResult = ConnectSocket.receiveQueue.poll();
+                JsonParser parser = new JsonParser();
+                JsonElement json = parser.parse(insertResult);
+                Log.e( "insertFriend: ","이름:"+ insertResult );
+                String insertMethod = json.getAsJsonObject().get("method").toString();
+                String insertStatus = json.getAsJsonObject().get("status").toString();
+                Log.e( "insertFriend: ","메소드:"+ insertMethod );
+                Log.e( "insertFriend: ","상태:"+ insertStatus );
+                if ("\"insertFriend\"".equals(insertMethod) && "\"r200\"".equals(insertStatus)) {
+                    Util.startToast(getApplicationContext(),"친구추가 되었습니다.");
+                }else{
+                    Util.startToast(getApplicationContext(),"친구추가 실패.");
+                }
+            }});
             } else {
                 Util.startToast(this, "해당 유저가 존재하지 않습니다.");
             }
-        }else{
+            }else{
             Util.startToast(this, "연락처를 입력해 주세요.");
         }
     }
-
-    public void addFriend(){
-        Util.startToast(this,"친구추가 되었습니다.");
-    }
-
 }

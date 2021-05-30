@@ -17,6 +17,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class FriendListFragment extends Fragment {
 
@@ -39,12 +48,43 @@ public class FriendListFragment extends Fragment {
         moveSearchFriend = (ImageButton)rootView.findViewById(R.id.moveSearchFriend);
         moveAddFriend = (ImageButton)rootView.findViewById(R.id.moveAddFriend);
 
-        for(int i=0;i<10;i++){
-            list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
-            friendNameText = (TextView)list_layout.findViewById(R.id.friendNameText);
-            friendNameText.setText(Integer.toString(i)+"친구이름");
 
-            inflateLayout.addView(list_layout);
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "friend" + "\",");
+        sb.append("\"method\":\"" + "selectAllFriend" + "\",");
+        sb.append("\"id\":\"" + MainActivity.id + "\",");
+        sb.append("}");
+
+        ConnectSocket.sendQueue.offer((sb.toString()));
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String result = ConnectSocket.receiveQueue.poll();
+
+
+
+        try {
+            JSONObject json = new JSONObject(result);
+            JSONArray jsonArray = json.getJSONArray("friendList");
+            String method = json.getString("method");
+            Log.e( "onCreateView: ", "몇명?"+ jsonArray.length());
+            for(int i=0; i<jsonArray.length();i++){
+                JSONObject obj = jsonArray.getJSONObject(i);
+                String name = obj.getString("name");
+                String id = obj.getString("id");
+
+                Log.e( "onCreateView: ", "이름은:" +name+" id는:" + id + "루프" + i);
+                list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
+                friendNameText = (TextView)list_layout.findViewById(R.id.friendNameText);
+                friendNameText.setText(name);
+
+                inflateLayout.addView(list_layout);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return rootView;
     }
