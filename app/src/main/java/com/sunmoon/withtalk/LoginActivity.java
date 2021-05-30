@@ -34,7 +34,6 @@ public class LoginActivity extends AppCompatActivity {
 
     ConnectSocket socket;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,15 +59,12 @@ public class LoginActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.loginButton:
                     sendToServer();
-
                     try {
                         Thread.sleep(1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                     receiveFromServer();
-                    //login();
                     break;
                 case R.id.loginMoveFindID:
                     moveActivity(FindIDActivity.class);
@@ -87,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         String id = loginIDText.getText().toString();
         String pw = loginPWText.getText().toString();
 
-        if ((id.length() > 6) && (pw.length() > 7)) {
+        if ((id.length() > 7) && (pw.length() > 7)) {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"" + "common" + "\",");
@@ -107,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String status = list[0];
 
-        if ("\"r200\"".equals(status)) {
+        if ("r200".equals(status)) {
             Util.startToast(this, "로그인 성공하셨습니다.");
 
             Intent intent = new Intent(this, MainActivity.class);
@@ -119,48 +115,6 @@ public class LoginActivity extends AppCompatActivity {
             Util.startToast(this, "에헤헤 뵹신 !");
         }
     }
-
-//    public void login(){
-//        String id = loginIDText.getText().toString();
-//        String pw = loginPWText.getText().toString();
-//
-//        if ((id.length() > 6) && (pw.length() > 7)) {
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("{");
-//            sb.append("\"type\":\"" + "common" + "\",");
-//            sb.append("\"method\":\"" + "login" + "\",");
-//            sb.append("\"id\":\"" + id + "\",");
-//            sb.append("\"password\":\"" + pw + "\"");
-//            sb.append("}");
-//
-//            ConnectSocket.sendQueue.offer((sb.toString()));
-//            try {
-//                Thread.sleep(1000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            // 결과 받기
-//            String result = ConnectSocket.receiveQueue.poll();
-//
-//            JsonParser parser = new JsonParser();
-//            JsonElement json = parser.parse(result);
-//
-//            String method = json.getAsJsonObject().get("method").toString();
-//            String status = json.getAsJsonObject().get("status").toString();
-//
-//            if ("\"login\"".equals(method) && "\"r200\"".equals(status)) {
-//                Util.startToast(this, "로그인 성공하셨습니다.");
-//
-//                Intent intent = new Intent(this, MainActivity.class);
-//                intent.putExtra("id", id);
-//                startActivity(intent);
-//            } else {
-//                Util.startToast(this, "에헤헤 뵹신 !");
-//            }
-//        }else{
-//            Util.startToast(this, "입력하지 않은 정보가 있습니다.");
-//        }
-//    }
 
     private void moveActivity(Class c) {
         Intent intent = new Intent(this, c);

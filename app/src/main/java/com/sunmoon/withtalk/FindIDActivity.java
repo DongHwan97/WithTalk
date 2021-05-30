@@ -29,6 +29,7 @@ public class FindIDActivity extends AppCompatActivity {
         findIDPhoneText = findViewById(R.id.findIDPhoneText);
         findIDButton = findViewById(R.id.findIDButton);
         resultIDText = findViewById(R.id.resultIDText);
+
         findIDButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,7 +40,6 @@ public class FindIDActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 receiveFromServer();
-                //findID();
             }
         });
     }
@@ -60,15 +60,15 @@ public class FindIDActivity extends AppCompatActivity {
 
             ConnectSocket.sendQueue.offer(sb.toString());
             Log.d("-----------", sb.toString());
+        } else {
+            Util.startToast(this,"회원가입되지 않은 사용자 입니다.");
         }
     }
 
     public void receiveFromServer() {
         //결과 받기
         String[] list = JsonHandler.messageReceived();
-        for(int i=0;i<list.length;i++){
-            Log.e( "receiveFromServer: ", "로그입니다"+list[i]);
-        }
+
         String status = list[0];
         String id = list[1];
 

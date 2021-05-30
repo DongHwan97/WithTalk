@@ -28,51 +28,46 @@ public class ResetPWActivity extends Activity {
         resetPWButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resetPW();
+                sendToServer();
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                receiveFromServer();
             }
         });
     }
 
-    public void resetPW(){
+    public void sendToServer() {
         String pw = newPWText.getText().toString();
         String confirmPw = newPWConfirmText.getText().toString();
         Intent intent = getIntent();
         String id = (String) intent.getSerializableExtra("id");
-        Log.e("auth: ", "로그입니다"+id);
-        if (pw.equals(confirmPw)&&(pw.length()>7)) {
+
+        if (pw.equals(confirmPw) && (pw.length() > 7)) {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"member\",");
             sb.append("\"method\":\"resetPassword\",");
             sb.append("\"id\":\"" + id + "\",");
-            sb.append("\"newPassword\":\"" + pw + "\",");
+            sb.append("\"newPassword\":\"" + pw + "\"");
             sb.append("}");
 
             ConnectSocket.sendQueue.offer(sb.toString());
+        } else {
+            Util.startToast(this, "비밀번호가 일치하지 않거나 8자리 이상이 아닙니다.");
+        }
+    }
 
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //회원 가입 성공 시 받은 메시지 {"method":"auth","status":"r200"}
-            String msg = ConnectSocket.receiveQueue.poll();
-
-            JsonParser parser = new JsonParser();
-            JsonObject jsonObject = (JsonObject) parser.parse(msg);
-
-            String method = jsonObject.get("method").toString();
-            Log.e("resetPassword: ", "로그입니다"+method);
-            String status = jsonObject.get("status").toString();
-            Log.e("resetPassword: ", "로그입니다"+status);
-
-            if ("\"resetPassword\"".equals(method) && "\"r200\"".equals(status)) {
-                Util.startToast(this, "비밀번호가 초기화 되었습니다.");
-                moveActivity(LoginActivity.class);
-            }
-        }else{
-            Util.startToast(this, "비밀번호가 일치하지 않습니다.");
+    public void receiveFromServer() {
+        String[] list = JsonHandler.messageReceived();
+        String status = list[0];
+        if ("r200".equals(status)) {
+            Util.startToast(this, "비밀번호 재설정이 성공하였습니다.");
+            moveActivity(LoginActivity.class);
+        } else {
+            Util.startToast(this, "비밀번호 재설정 실패 !");
         }
     }
 

@@ -29,16 +29,23 @@ public class FindPWActivity extends AppCompatActivity {
         findPWButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                auth();
+                sendToServer();
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                receiveFromServer();
             }
         });
     }
 
-    public void auth() {
+    public void sendToServer() {
         String id = findPWIDText.getText().toString();
         String name = findPWNameText.getText().toString();
         String phone = findPWPhoneText.getText().toString();
-        if ((id.length() > 6) && (name.length() > 1) && (phone.length() > 10)) {
+
+        if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10)) {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"member\",");
@@ -49,34 +56,24 @@ public class FindPWActivity extends AppCompatActivity {
             sb.append("}");
 
             ConnectSocket.sendQueue.offer(sb.toString());
-
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //회원 가입 성공 시 받은 메시지 {"method":"auth","status":"r200"}
-            String msg = ConnectSocket.receiveQueue.poll();
-
-            JsonParser parser = new JsonParser();
-            JsonObject jsonObject = (JsonObject) parser.parse(msg);
-
-            String method = jsonObject.get("method").toString();
-            String status = jsonObject.get("status").toString();
-
-
-            if ("\"auth\"".equals(method) && "\"r200\"".equals(status)) {
-                Util.startToast(this, "인증 성공하셨습니다.");
-                Intent intent = new Intent(this, ResetPWActivity.class);
-                intent.putExtra("id",id);
-                startActivity(intent);
-            } else {
-                Util.startToast(this, "회원가입되지 않은 사용자 이거나 정보가 틀립니다.");
-            }
-        }else{
+        } else {
             Util.startToast(this, "입력하지 않은 정보가 있습니다.");
         }
     }
 
+    public void receiveFromServer() {
+        String[] list = JsonHandler.messageReceived();
+        String status = list[0];
+
+        String id = findPWIDText.getText().toString();
+
+        if ("r200".equals(status)) {
+            Util.startToast(this, "인증 성공하셨습니다.");
+            Intent intent = new Intent(this, ResetPWActivity.class);
+            intent.putExtra("id", id);
+            startActivity(intent);
+        } else {
+            Util.startToast(this, "회원가입 되지 않은 사용자이거나 정보가 틀립니다.");
+        }
+    }
 }

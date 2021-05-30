@@ -29,12 +29,38 @@ public class SettingFragment extends Fragment {
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Util.startToast(getActivity(), "로그아웃");
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
+                sendToServer();
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                receiveFromServer();
             }
         });
+
         return rootView;
     }
 
+    public void sendToServer() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"common\",");
+        sb.append("\"method\":\"logout\",");
+        sb.append("\"senderId\":\"" + MainActivity.id + "\"");
+        sb.append("}");
+
+        ConnectSocket.sendQueue.offer(sb.toString());
+    }
+
+    public void receiveFromServer() {
+        String[] list = JsonHandler.messageReceived();
+
+        String status = list[0];
+        if ("r200".equals(status)) {
+            Util.startToast(getContext(), "로그아웃");
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+        }
+    }
 }

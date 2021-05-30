@@ -17,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //데이터베이스가 생성될 때 호출됨
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE CHAT (id integer, senderId text);");//테이블 생성
+        db.execSQL("CREATE TABLE IF NOT EXISTS CHAT (ID INTEGER PRIMARY KEY AUTOINCREMENT, SENDER_ID TEXT NOT NULL);");//테이블 생성
         //Cursor cursor = db.rawQuery("select id, senderId from chatroom", null);
         //sqlDB = dbHelper.getWritableDatabase();
         //sqlDB.execSQL("INSERT INTO CHAT VALUES (1, "CHO"));
