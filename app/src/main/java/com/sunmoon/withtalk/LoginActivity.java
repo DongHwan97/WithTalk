@@ -59,7 +59,16 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.loginButton:
-                        login();
+                    sendToServer();
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    receiveFromServer();
+                    //login();
                     break;
                 case R.id.loginMoveFindID:
                     moveActivity(FindIDActivity.class);
@@ -74,20 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        moveTaskToBack(true);
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);
-    }
-    public void login(){
+    public void sendToServer() {
         String id = loginIDText.getText().toString();
         String pw = loginPWText.getText().toString();
 
@@ -101,35 +97,87 @@ public class LoginActivity extends AppCompatActivity {
             sb.append("}");
 
             ConnectSocket.sendQueue.offer((sb.toString()));
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            // 결과 받기
-            String result = ConnectSocket.receiveQueue.poll();
-
-            JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(result);
-
-            String method = json.getAsJsonObject().get("method").toString();
-            String status = json.getAsJsonObject().get("status").toString();
-
-            if ("\"login\"".equals(method) && "\"r200\"".equals(status)) {
-                Util.startToast(this, "로그인 성공하셨습니다.");
-
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("id", id);
-                startActivity(intent);
-            } else {
-                Util.startToast(this, "에헤헤 뵹신 !");
-            }
-        }else{
+        } else {
             Util.startToast(this, "입력하지 않은 정보가 있습니다.");
         }
     }
+
+    public void receiveFromServer() {
+        String[] list = JsonHandler.messageReceived();
+
+        String status = list[0];
+
+        if ("\"r200\"".equals(status)) {
+            Util.startToast(this, "로그인 성공하셨습니다.");
+
+            Intent intent = new Intent(this, MainActivity.class);
+            String id = loginIDText.getText().toString();
+
+            intent.putExtra("id", id);
+            startActivity(intent);
+        } else {
+            Util.startToast(this, "에헤헤 뵹신 !");
+        }
+    }
+
+//    public void login(){
+//        String id = loginIDText.getText().toString();
+//        String pw = loginPWText.getText().toString();
+//
+//        if ((id.length() > 6) && (pw.length() > 7)) {
+//            StringBuilder sb = new StringBuilder();
+//            sb.append("{");
+//            sb.append("\"type\":\"" + "common" + "\",");
+//            sb.append("\"method\":\"" + "login" + "\",");
+//            sb.append("\"id\":\"" + id + "\",");
+//            sb.append("\"password\":\"" + pw + "\"");
+//            sb.append("}");
+//
+//            ConnectSocket.sendQueue.offer((sb.toString()));
+//            try {
+//                Thread.sleep(1000);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            // 결과 받기
+//            String result = ConnectSocket.receiveQueue.poll();
+//
+//            JsonParser parser = new JsonParser();
+//            JsonElement json = parser.parse(result);
+//
+//            String method = json.getAsJsonObject().get("method").toString();
+//            String status = json.getAsJsonObject().get("status").toString();
+//
+//            if ("\"login\"".equals(method) && "\"r200\"".equals(status)) {
+//                Util.startToast(this, "로그인 성공하셨습니다.");
+//
+//                Intent intent = new Intent(this, MainActivity.class);
+//                intent.putExtra("id", id);
+//                startActivity(intent);
+//            } else {
+//                Util.startToast(this, "에헤헤 뵹신 !");
+//            }
+//        }else{
+//            Util.startToast(this, "입력하지 않은 정보가 있습니다.");
+//        }
+//    }
+
     private void moveActivity(Class c) {
         Intent intent = new Intent(this, c);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
     }
 }

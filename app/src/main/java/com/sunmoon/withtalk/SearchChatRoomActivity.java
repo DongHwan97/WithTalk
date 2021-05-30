@@ -13,6 +13,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 
 public class SearchChatRoomActivity extends AppCompatActivity {
 
@@ -37,19 +40,61 @@ public class SearchChatRoomActivity extends AppCompatActivity {
                 searchChatRoom();
             }
         });
+
+        inflateLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showDialog();
+                return true;
+            }
+        });
     }
 
-    public void searchChatRoom(){
-        inflateLayout.removeView(listLayout);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        searchChatRoomEdit.getText().toString();//검색 데이터 전송 받고
+    public void searchChatRoom() {
+        String chatRoomName = searchChatRoomEdit.getText().toString();
 
-        listLayout =  inflater.inflate(R.layout.chatroomlistlayout, inflateLayout, false);
-        TextView ChatRoomNameText = (TextView)listLayout.findViewById(R.id.chatRoomNameText);
-        TextView ChatRoomDateText = (TextView)listLayout.findViewById(R.id.chatRoomDateText);
-        ChatRoomNameText.setText("채팅방");
-        ChatRoomDateText.setText("날짜");
+        if (chatRoomName.length() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            sb.append("\"type\":\"chatRoom\",");
+            sb.append("\"method\":\"searchChatRoom\",");
+            sb.append("\"name\":\"" + chatRoomName + "\"");
+            sb.append("}");
 
-        inflateLayout.addView(listLayout);
+            ConnectSocket.sendQueue.offer(sb.toString());
+
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            while (ConnectSocket.receiveQueue.peek() != null) {
+                String result = ConnectSocket.receiveQueue.poll(); //내부 디비에서 찾아야하나...
+
+                JsonParser parser = new JsonParser();
+                JsonElement json = parser.parse(result);
+
+                String method = json.getAsJsonObject().get("method").toString();
+                String status = json.getAsJsonObject().get("status").toString();
+
+                if ("searchChatRoom".equals(method) && "r200".equals(status)) {
+                    inflateLayout.removeView(listLayout);
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                    listLayout =  inflater.inflate(R.layout.chatroomlistlayout, inflateLayout, false);
+                    TextView ChatRoomNameText = (TextView)listLayout.findViewById(R.id.chatRoomNameText);
+                    ChatRoomNameText.setText(chatRoomName);
+
+                    inflateLayout.addView(listLayout);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    public void showDialog() {
+
     }
 }

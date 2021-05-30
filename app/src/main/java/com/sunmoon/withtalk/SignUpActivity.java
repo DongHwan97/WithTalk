@@ -60,7 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
                 ConnectSocket.sendQueue.offer(sb.toString());
 
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
