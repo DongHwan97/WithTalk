@@ -37,6 +37,8 @@ public class ChatRoomListFragment extends Fragment {
         inflateLayout = (LinearLayout)rootView.findViewById(R.id.chatlist_layout);
 
         moveSearchChatRoom = (ImageButton)rootView.findViewById(R.id.moveSearchChatRoom);
+
+
         for(int i=0;i<10;i++){
             list_layout = inflater.inflate(R.layout.chatroomlistlayout,inflateLayout,false);
             listNameText = (TextView)list_layout.findViewById(R.id.chatRoomNameText);

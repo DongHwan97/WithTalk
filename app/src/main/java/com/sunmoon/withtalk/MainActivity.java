@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
 
     private FragmentPagerAdapter fragmentPagerAdapter;
     public TextToSpeech tts;
-    Intent intent = getIntent();
     public static String id;
 
     @Override
@@ -61,9 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Intent intent = getIntent();
-                String id = (String) intent.getSerializableExtra("id");
-                Bundle bundle = new Bundle();
                 switch (position){
 
                     case 0: tts.speak("메시지 확인", TextToSpeech.QUEUE_FLUSH, null);
