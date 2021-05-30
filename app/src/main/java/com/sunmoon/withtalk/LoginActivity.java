@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String status = list[0];
 
-        if ("\"r200\"".equals(status)) {
+        if ("r200".equals(status)) {
             Util.startToast(this, "로그인 성공하셨습니다.");
 
             Intent intent = new Intent(this, MainActivity.class);

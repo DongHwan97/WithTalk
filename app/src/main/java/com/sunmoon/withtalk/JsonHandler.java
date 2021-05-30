@@ -17,7 +17,7 @@ public class JsonHandler {
     static String[] list;
 
     public static String[] messageReceived() {
-        Log.d("+++++++++++", "while문 전");
+
         while (true) {
             if (ConnectSocket.receiveQueue.peek() != null) {
                 String result = ConnectSocket.receiveQueue.poll();
@@ -35,7 +35,7 @@ public class JsonHandler {
                             Log.d("+++++++++++", list.toString());
 
                             break;
-                        case "\"login\"":
+                        case "login":
                             list = new String[1];
                             list[0] = json.getString("status");
 

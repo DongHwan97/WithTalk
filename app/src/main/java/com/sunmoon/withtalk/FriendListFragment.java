@@ -64,24 +64,24 @@ public class FriendListFragment extends Fragment {
         }
         String result = ConnectSocket.receiveQueue.poll();
 
-
+        Log.e( "onCreateView: ", "몇명?"+ result);
 
         try {
             JSONObject json = new JSONObject(result);
             JSONArray jsonArray = json.getJSONArray("friendList");
             String method = json.getString("method");
-            Log.e( "onCreateView: ", "몇명?"+ jsonArray.length());
+            String status = json.getString("status");
             for(int i=0; i<jsonArray.length();i++){
                 JSONObject obj = jsonArray.getJSONObject(i);
                 String name = obj.getString("name");
                 String id = obj.getString("id");
+                if ("selectAllFriend".equals(method) && "r200".equals(status)) {
+                    list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
+                    friendNameText = (TextView)list_layout.findViewById(R.id.friendNameText);
+                    friendNameText.setText(name);
 
-                Log.e( "onCreateView: ", "이름은:" +name+" id는:" + id + "루프" + i);
-                list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
-                friendNameText = (TextView)list_layout.findViewById(R.id.friendNameText);
-                friendNameText.setText(name);
-
-                inflateLayout.addView(list_layout);
+                    inflateLayout.addView(list_layout);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();

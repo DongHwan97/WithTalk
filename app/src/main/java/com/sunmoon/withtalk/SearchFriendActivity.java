@@ -18,6 +18,10 @@ import android.widget.TextView;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class SearchFriendActivity extends AppCompatActivity {
 
     ImageButton searchFriendButton;
@@ -51,16 +55,19 @@ public class SearchFriendActivity extends AppCompatActivity {
     }
 
     public void searchFriend(){
-        String friendPhoneNo = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
-        if ((friendPhoneNo.length() > 10) ) {
+        inflateLayout.removeAllViews();
+        String friendName = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
+        if ((friendName.length() > 1) ) {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"" + "friend" + "\",");
-            sb.append("\"method\":\"" + "searchFriend" + "\",");
-            sb.append("\"phoneNo\":\"" + friendPhoneNo + "\",");
+            sb.append("\"method\":\"" + "searchRegistFriend" + "\",");
+            sb.append("\"senderId\":\"" + MainActivity.id + "\",");
+            sb.append("\"searchName\":\"" + friendName + "\"");
             sb.append("}");
-
             ConnectSocket.sendQueue.offer((sb.toString()));
+            Log.e( "searchFriend: ","보냈나?"+sb.toString());
+
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
@@ -69,29 +76,30 @@ public class SearchFriendActivity extends AppCompatActivity {
             // 결과 받기
             String result = ConnectSocket.receiveQueue.poll();
 
-            JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(result);
-
-            String method = json.getAsJsonObject().get("method").toString();
-            String status = json.getAsJsonObject().get("status").toString();
-            String id = json.getAsJsonObject().get("id").toString();
-            String name = json.getAsJsonObject().get("name").toString();
-            String phoneNo = json.getAsJsonObject().get("phoneNo").toString();
-
-            if ("\"searchFriend\"".equals(method) && "\"r200\"".equals(status)) {
-                Util.startToast(this, "로그인 성공하셨습니다.");
-                inflateLayout.removeView(listLayout);
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                listLayout =  inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
-                TextView friendNameText = (TextView)listLayout.findViewById(R.id.friendNameText);
-                friendNameText.setText(name);
-                inflateLayout.addView(listLayout);
-
-            } else {
-                Util.startToast(this, "에헤헤 뵹신 !");
+            try {
+                JSONObject json = new JSONObject(result);
+                JSONArray jsonArray = json.getJSONArray("registFriendList");
+                String method = json.getString("method");
+                String status = json.getString("status");
+                if ("searchRegistFriend".equals(method) && "r200".equals(status)) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject obj = jsonArray.getJSONObject(i);
+                        String name = obj.getString("name");
+                        String id = obj.getString("id");
+                        if ("searchRegistFriend".equals(method) && "r200".equals(status)) {
+                            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                            listLayout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+                            TextView friendNameText = (TextView) listLayout.findViewById(R.id.friendNameText);
+                            friendNameText.setText(name);
+                            inflateLayout.addView(listLayout);
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }else{
-            Util.startToast(this, "연락처를 입력해 주세요");
+            Util.startToast(this, "이름을 입력해 주세요");
         }
     }
 
@@ -102,7 +110,6 @@ public class SearchFriendActivity extends AppCompatActivity {
         friendBuilder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.e( "onClick: ", Integer.toString(which)+"입니다");
                 switch (which){
                     case 0: moveActivity(ChatActivity.class);
                         break;

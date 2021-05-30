@@ -110,7 +110,7 @@ public class TTSFragment extends Fragment {
                     message = "클라이언트 에러";
                     break;
                 case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                    message = "퍼미션 없음";
+                    message = "권한 허용 필요";
                     break;
                 case SpeechRecognizer.ERROR_NETWORK:
                     message = "네트워크 에러";
@@ -139,11 +139,11 @@ public class TTSFragment extends Fragment {
 
         @Override
         public void onResults(Bundle results) {
-            ArrayList<String> matches =
+            ArrayList<String> result =
                     results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-            for(int i = 0; i < matches.size() ; i++){
-                nameView.setText(matches.get(i));
+            for(int i = 0; i < result.size() ; i++){
+                nameView.setText(result.get(i));
                 moveActivity(ChatActivity.class);
             }
         }
