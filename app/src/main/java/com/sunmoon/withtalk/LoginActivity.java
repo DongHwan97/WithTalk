@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
                     String id = loginIDText.getText().toString();
                     String pw = loginPWText.getText().toString();
 
-                    if (id.length() > 7 && pw.length() > 7) {
+                    if (id.length() > 6 && pw.length() > 7) {
                         sendToServer(id, pw);
                         try {
                             Thread.sleep(1000);

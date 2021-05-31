@@ -184,7 +184,7 @@ public class FriendListFragment extends Fragment {
 
         ConnectSocket.sendQueue.offer((sb.toString()));
         try {
-            Thread.sleep(1000);
+            Thread.sleep(300);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -226,9 +226,4 @@ public class FriendListFragment extends Fragment {
         startActivity(intent);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        refresh();
-    }
 }
