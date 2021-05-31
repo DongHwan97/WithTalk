@@ -20,9 +20,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class FriendListFragment extends Fragment {
 
@@ -39,33 +36,13 @@ public class FriendListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_friend_list, container, false);
-        inflateLayout = (LinearLayout) rootView.findViewById(R.id.friend_layout);
-
-
-        moveSearchFriend = (ImageButton) rootView.findViewById(R.id.moveSearchFriend);
-        moveAddFriend = (ImageButton) rootView.findViewById(R.id.moveAddFriend);
-
-        sendToFriendList();
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
-        receiveFromFriendList();
-
-        inflateLayout.addView(list_layout);
-
-        return rootView;
-    }
+        rootView = (ViewGroup)inflater.inflate(R.layout.fragment_friend_list, container, false);
+        inflateLayout = (LinearLayout)rootView.findViewById(R.id.friend_layout);
 
         moveSearchFriendButton = (ImageButton)rootView.findViewById(R.id.moveSearchFriendButton);
         moveAddFriendButton = (ImageButton)rootView.findViewById(R.id.moveAddFriendButton);
         refreshButton = (ImageButton)rootView.findViewById(R.id.refreshButton);
 
-
-    public void sendToFriendList() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"type\":\"" + "friend" + "\",");
@@ -74,30 +51,6 @@ public class FriendListFragment extends Fragment {
         sb.append("}");
 
         ConnectSocket.sendQueue.offer((sb.toString()));
-
-    }
-
-    public void receiveFromFriendList() {
-        List<String> lists = JsonHandler.messageReceived();
-
-        Log.d("---------", lists.toString());
-        String status = lists.get(0);
-
-        if ("r200".equals(status)) {
-            for (int i = 1; i < lists.size(); i = i + 2) {
-                friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
-                String name = lists.get(i);
-                String friendId = lists.get(i + 1);
-
-                friendNameText.setText(name);
-                list_layout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        showDialog(name, friendId);
-                        return true;
-                    }
-                });
-=======
         try {
             Thread.sleep(200);
         } catch (Exception e) {
@@ -128,9 +81,11 @@ public class FriendListFragment extends Fragment {
                     });
                     inflateLayout.addView(list_layout);
                 }
->>>>>>> b9dc584912a430d449e5e99cf0c6e941b1fe7366
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        return rootView;
     }
 
     @Override
@@ -159,27 +114,19 @@ public class FriendListFragment extends Fragment {
         });
     }
 
-    public void showDialog(String friendName, String friendId) {
+    public void showDialog(String friendName, String friendId){
         final CharSequence[] items = {"1:1 대화", "친구 삭제"};
         AlertDialog.Builder friendBuilder = new AlertDialog.Builder(getActivity());
         friendBuilder.setTitle("친구 관리");
         friendBuilder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.e("onClick: ", Integer.toString(which) + "입니다");
-                switch (which) {
-                    case 0:
-                        moveChatRoom(friendName, friendId);
+                Log.e( "onClick: ", Integer.toString(which)+"입니다");
+                switch (which){
+                    case 0: moveChatRoom(friendName, friendId);
                         break;
-                    case 1:
-                        sendToDeleteFriend(friendId);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        receiveDeleteFriend(friendId);
-                        Util.startToast(getContext(), "친구삭제 되었습니다");
+                    case 1: deleteFriend(friendId);
+                        Util.startToast(getContext(),"친구삭제 되었습니다");
                         break;
                 }
             }
@@ -187,14 +134,14 @@ public class FriendListFragment extends Fragment {
         friendBuilder.show();
     }
 
-    public void moveChatRoom(String friendName, String friendId) {
+    public void moveChatRoom(String friendName,String friendId){
         Intent intent = new Intent(getContext(), ChatActivity.class);
         intent.putExtra("friendName", friendName);
         intent.putExtra("friendId", friendId);
         startActivity(intent);
     }
 
-    public void sendToDeleteFriend(String friendId) {
+    public void deleteFriend(String friendId){
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"type\":\"" + "friend" + "\",");
@@ -202,25 +149,8 @@ public class FriendListFragment extends Fragment {
         sb.append("\"memberId\":\"" + MainActivity.id + "\",");
         sb.append("\"friendId\":\"" + friendId + "\"");
         sb.append("}");
-
         ConnectSocket.sendQueue.offer((sb.toString()));
-    }
 
-<<<<<<< HEAD
-    public void receiveDeleteFriend(String friendId) {
-        List<String> lists = JsonHandler.lists;
-
-        String status = lists.get(0);
-        if ("r200".equals(status)) {
-            Util.startToast(getContext(), friendId + "가 삭제되었습니다.");
-        } else {
-            Util.startToast(getContext(), "삭제에 실패했습니다.");
-        }
-    }
-
-    private void moveActivity(Class c) {
-        Intent intent = new Intent(getContext(), c);
-=======
         try {
             Thread.sleep(300);
         } catch (Exception e) {
@@ -293,7 +223,6 @@ public class FriendListFragment extends Fragment {
     private void moveActivity(Class c){//
 
         Intent intent = new Intent(getContext(),c);
->>>>>>> b9dc584912a430d449e5e99cf0c6e941b1fe7366
         startActivity(intent);
     }
 
