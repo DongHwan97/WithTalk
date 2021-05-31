@@ -58,13 +58,15 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.loginButton:
+
                     sendToServer();
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(150);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     receiveFromServer();
+
                     break;
                 case R.id.loginMoveFindID:
                     moveActivity(FindIDActivity.class);
@@ -82,8 +84,7 @@ public class LoginActivity extends AppCompatActivity {
     public void sendToServer() {
         String id = loginIDText.getText().toString();
         String pw = loginPWText.getText().toString();
-
-        if ((id.length() > 7) && (pw.length() > 7)) {
+        if ((id.length() > 6) && (pw.length() > 7)) {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"" + "common" + "\",");
@@ -94,13 +95,12 @@ public class LoginActivity extends AppCompatActivity {
 
             ConnectSocket.sendQueue.offer((sb.toString()));
         } else {
-            Util.startToast(this, "입력하지 않은 정보가 있습니다.");
+            Util.startToast(getApplicationContext(), "입력하지 않은 정보가 있습니다.");
         }
     }
 
     public void receiveFromServer() {
         String[] list = JsonHandler.messageReceived();
-
         String status = list[0];
 
         if ("r200".equals(status)) {

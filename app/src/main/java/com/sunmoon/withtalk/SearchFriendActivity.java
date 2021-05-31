@@ -45,19 +45,13 @@ public class SearchFriendActivity extends AppCompatActivity {
             }
         });
 
-        inflateLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showDialog();
-                return true;
-            }
-        });
+
     }
 
     public void searchFriend(){
         inflateLayout.removeAllViews();
         String friendName = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
-        if ((friendName.length() > 1) ) {
+        if ((friendName.length() > 0) ) {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"" + "friend" + "\",");
@@ -66,15 +60,15 @@ public class SearchFriendActivity extends AppCompatActivity {
             sb.append("\"searchName\":\"" + friendName + "\"");
             sb.append("}");
             ConnectSocket.sendQueue.offer((sb.toString()));
-            Log.e( "searchFriend: ","보냈나?"+sb.toString());
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(300);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             // 결과 받기
             String result = ConnectSocket.receiveQueue.poll();
+            Log.e( "searchFriend: ","result"+result );
 
             try {
                 JSONObject json = new JSONObject(result);
@@ -85,13 +79,22 @@ public class SearchFriendActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject obj = jsonArray.getJSONObject(i);
                         String name = obj.getString("name");
-                        String id = obj.getString("id");
+                        String friendId = obj.getString("id");
+
+
                         if ("searchRegistFriend".equals(method) && "r200".equals(status)) {
                             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                             listLayout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
                             TextView friendNameText = (TextView) listLayout.findViewById(R.id.friendNameText);
                             friendNameText.setText(name);
                             inflateLayout.addView(listLayout);
+                            listLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
+                                    showDialog(friendId);
+                                    return true;
+                                }
+                            });
                         }
                     }
                 }
@@ -103,17 +106,18 @@ public class SearchFriendActivity extends AppCompatActivity {
         }
     }
 
-    public void showDialog(){
+    public void showDialog(String friendId){
         final CharSequence[] items = {"1:1 대화", "친구 삭제"};
         AlertDialog.Builder friendBuilder = new AlertDialog.Builder(this);
         friendBuilder.setTitle("친구 관리");
+
         friendBuilder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case 0: moveActivity(ChatActivity.class);
                         break;
-                    case 1: deleteFriend();
+                    case 1: deleteFriend(friendId);
                         break;
                 }
             }
@@ -121,8 +125,36 @@ public class SearchFriendActivity extends AppCompatActivity {
         friendBuilder.show();
     }
 
-    public void deleteFriend(){
+    public void deleteFriend(String friendId){
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "friend" + "\",");
+        sb.append("\"method\":\"" + "delete" + "\",");
+        sb.append("\"memberId\":\"" + MainActivity.id + "\",");
+        sb.append("\"friendId\":\"" + friendId + "\"");
+        sb.append("}");
+        ConnectSocket.sendQueue.offer((sb.toString()));
+
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 결과 받기
+        String result = ConnectSocket.receiveQueue.poll();
+        try {
+            JSONObject json = new JSONObject(result);
+            String method = json.getString("method");
+            String status = json.getString("status");
+            if ("delete".equals(method) && "r200".equals(status)) {
+                Util.startToast(this,friendId+"삭제되었습니다.");
+            }else{
+                Util.startToast(this,"실패했습니다.");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void moveActivity(Class c){//

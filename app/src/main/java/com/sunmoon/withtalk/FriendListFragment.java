@@ -74,12 +74,19 @@ public class FriendListFragment extends Fragment {
             for(int i=0; i<jsonArray.length();i++){
                 JSONObject obj = jsonArray.getJSONObject(i);
                 String name = obj.getString("name");
-                String id = obj.getString("id");
+                String friendId = obj.getString("id");
+
                 if ("selectAllFriend".equals(method) && "r200".equals(status)) {
                     list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
                     friendNameText = (TextView)list_layout.findViewById(R.id.friendNameText);
                     friendNameText.setText(name);
-
+                    list_layout.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            showDialog(name, friendId);
+                            return true;
+                        }
+                    });
                     inflateLayout.addView(list_layout);
                 }
             }
@@ -92,14 +99,6 @@ public class FriendListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        inflateLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showDialog();
-                return true;
-            }
-        });
-
 
         moveSearchFriend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +115,7 @@ public class FriendListFragment extends Fragment {
         });
     }
 
-    public void showDialog(){
+    public void showDialog(String friendName, String friendId){
     final CharSequence[] items = {"1:1 대화", "친구 삭제"};
         AlertDialog.Builder friendBuilder = new AlertDialog.Builder(getActivity());
         friendBuilder.setTitle("친구 관리");
@@ -125,9 +124,9 @@ public class FriendListFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 Log.e( "onClick: ", Integer.toString(which)+"입니다");
                      switch (which){
-                         case 0: moveActivity(ChatActivity.class);
+                         case 0: moveChatRoom(friendName, friendId);
                              break;
-                         case 1: deleteFriend();
+                         case 1: deleteFriend(friendId);
                              Util.startToast(getContext(),"친구삭제 되었습니다");
                              break;
                      }
@@ -136,15 +135,47 @@ public class FriendListFragment extends Fragment {
         friendBuilder.show();
     }
 
-    public void deleteFriend(){
+    public void moveChatRoom(String friendName,String friendId){
+        Intent intent = new Intent(getContext(), ChatActivity.class);
+        intent.putExtra("friendName", friendName);
+        intent.putExtra("friendId", friendId);
+        startActivity(intent);
+    }
 
+    public void deleteFriend(String friendId){
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "friend" + "\",");
+        sb.append("\"method\":\"" + "delete" + "\",");
+        sb.append("\"memberId\":\"" + MainActivity.id + "\",");
+        sb.append("\"friendId\":\"" + friendId + "\"");
+        sb.append("}");
+        ConnectSocket.sendQueue.offer((sb.toString()));
+
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 결과 받기
+        String result = ConnectSocket.receiveQueue.poll();
+        try {
+            JSONObject json = new JSONObject(result);
+            String method = json.getString("method");
+            String status = json.getString("status");
+            if ("delete".equals(method) && "r200".equals(status)) {
+                Util.startToast(getContext(),friendId+"삭제되었습니다.");
+            }else{
+                Util.startToast(getContext(),"실패했습니다.");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
-    public void showFriendList(){
-        
-    }
+
     private void moveActivity(Class c){//
 
-        Intent intent = new Intent(getActivity(),c);
+        Intent intent = new Intent(getContext(),c);
         startActivity(intent);
     }
 }
