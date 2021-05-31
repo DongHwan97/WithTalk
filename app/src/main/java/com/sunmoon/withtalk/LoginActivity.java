@@ -26,6 +26,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText loginIDText, loginPWText;
@@ -61,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                     String id = loginIDText.getText().toString();
                     String pw = loginPWText.getText().toString();
 
-                    if (id.length() > 7 && pw.length() > 7) {
+                    if (id.length() > 6 && pw.length() > 7) {
                         sendToServer(id, pw);
                         try {
                             Thread.sleep(1000);
@@ -99,9 +101,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void receiveFromServer() {
-        String[] list = JsonHandler.messageReceived();
+        ArrayList<String> lists = JsonHandler.messageReceived();
 
-        String status = list[0];
+        String status = lists.get(0);
 
         if ("r200".equals(status)) {
             Util.startToast(this, "로그인 성공하셨습니다.");

@@ -6,17 +6,20 @@ import android.util.Log;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Handler;
 
 public class JsonHandler {
     static JSONObject json;
     static String method;
-    static String[] list;
+    static ArrayList<String> lists;
 
-    public static String[] messageReceived() {
+    public static ArrayList<String> messageReceived() {
         if (ConnectSocket.receiveQueue.peek() != null) {
             String result = ConnectSocket.receiveQueue.poll();
             try {
@@ -30,16 +33,27 @@ public class JsonHandler {
                     case "auth":
                     case "resetPassword":
                     case "logout":
-                        list = new String[1];
-                        list[0] = json.getString("status");
+                    case "delete":
+                        lists = new ArrayList<>();
+                        lists.add(json.getString("status"));
 
                         break;
                     case "findId":
-                        list = new String[2];
-                        list[0] = json.getString("status");
-                        list[1] = json.getString("id");
+                        lists = new ArrayList<>();
+                        lists.add(json.getString("status"));
+                        lists.add(json.getString("id"));
 
-                        Log.d("+++++++++++", list.toString());
+                        break;
+                    case "selectAllFriend":
+                        lists = new ArrayList<>();
+                        lists.add(json.getString("status"));
+
+                        JSONArray jsonArray = json.getJSONArray("friendList");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject obj = jsonArray.getJSONObject(i);
+                            lists.add(obj.getString("name"));
+                            lists.add(obj.getString("id"));
+                        }
 
                         break;
                 }
@@ -47,6 +61,6 @@ public class JsonHandler {
                 e.printStackTrace();
             }
         }
-        return list;
+        return lists;
     }
 }

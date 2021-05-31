@@ -11,6 +11,8 @@ import android.widget.EditText;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.List;
+
 public class ResetPWActivity extends Activity {
 
     EditText newPWText, newPWConfirmText;
@@ -61,8 +63,8 @@ public class ResetPWActivity extends Activity {
     }
 
     public void receiveFromServer() {
-        String[] list = JsonHandler.messageReceived();
-        String status = list[0];
+        List<String> lists = JsonHandler.messageReceived();
+        String status = lists.get(0);
         if ("r200".equals(status)) {
             Util.startToast(this, "비밀번호 재설정이 성공하였습니다.");
             moveActivity(LoginActivity.class);

@@ -43,14 +43,14 @@ public class SearchFriendActivity extends AppCompatActivity {
         searchFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchFriend(senderId);
+                searchRegistFriend(senderId);
             }
         });
 
 
     }
 
-    public void searchFriend(String senderId){
+    public void searchRegistFriend(String senderId){
         inflateLayout.removeAllViews();
         String friendName = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
         if ((friendName.length() > 0) ) {
@@ -82,7 +82,6 @@ public class SearchFriendActivity extends AppCompatActivity {
                         JSONObject obj = jsonArray.getJSONObject(i);
                         String name = obj.getString("name");
                         String friendId = obj.getString("id");
-
 
                         if ("searchRegistFriend".equals(method) && "r200".equals(status)) {
                             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

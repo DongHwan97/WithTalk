@@ -12,6 +12,8 @@ import android.widget.EditText;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.List;
+
 public class SignUpActivity extends AppCompatActivity {
     EditText signUpIDText, signUpNameText, signUpPhoneText, signUpPWText, signUpConfirmPW;
     Button signUpButton;
@@ -71,9 +73,9 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void receiveFromServer() {
-        String[] list = JsonHandler.messageReceived();
+        List<String> lists = JsonHandler.messageReceived();
 
-        String status = list[0];
+        String status = lists.get(0);
 
         if ("r200".equals(status)) {
             Util.startToast(this, "회원가입에 성공하셨습니다.");

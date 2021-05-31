@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import java.util.List;
 import java.util.Locale;
 
 public class SettingFragment extends Fragment {
@@ -54,9 +55,9 @@ public class SettingFragment extends Fragment {
     }
 
     public void receiveFromServer() {
-        String[] list = JsonHandler.messageReceived();
+        List<String> lists = JsonHandler.messageReceived();
 
-        String status = list[0];
+        String status = lists.get(0);
         if ("r200".equals(status)) {
             Util.startToast(getContext(), "로그아웃");
             Intent intent = new Intent(getActivity(), LoginActivity.class);

@@ -12,6 +12,8 @@ import android.widget.EditText;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.List;
+
 public class FindPWActivity extends AppCompatActivity {
 
     EditText findPWIDText, findPWNameText, findPWPhoneText;
@@ -62,8 +64,8 @@ public class FindPWActivity extends AppCompatActivity {
     }
 
     public void receiveFromServer() {
-        String[] list = JsonHandler.messageReceived();
-        String status = list[0];
+        List<String> lists = JsonHandler.messageReceived();
+        String status = lists.get(0);
 
         String id = findPWIDText.getText().toString();
 
@@ -71,6 +73,7 @@ public class FindPWActivity extends AppCompatActivity {
             Util.startToast(this, "인증 성공하셨습니다.");
             Intent intent = new Intent(this, ResetPWActivity.class);
             intent.putExtra("id", id);
+
             startActivity(intent);
         } else {
             Util.startToast(this, "회원가입 되지 않은 사용자이거나 정보가 틀립니다.");

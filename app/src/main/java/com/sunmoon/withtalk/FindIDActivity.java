@@ -16,6 +16,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FindIDActivity extends AppCompatActivity {
     EditText findIDNameText, findIDPhoneText;
     Button findIDButton;
@@ -66,16 +69,13 @@ public class FindIDActivity extends AppCompatActivity {
 
     public void receiveFromServer() {
         //결과 받기
-        String[] list = JsonHandler.messageReceived();
+        List<String> lists = JsonHandler.messageReceived();
 
-        String status = list[0];
-        String id = list[1];
+        String status = lists.get(0);
+        String id = lists.get(1);
 
         if ("r200".equals(status)) {
-            Intent intent = new Intent(this, ResetPWActivity.class);
-            intent.putExtra("id", id);
             resultIDText.setText("아이디는 " + id + "입니다.");
-            startActivity(intent);
         } else {
             Util.startToast(this, "회원가입되지 않은 사용자 입니다.");
         }

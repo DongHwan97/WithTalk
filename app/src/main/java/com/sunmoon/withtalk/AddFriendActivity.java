@@ -42,7 +42,6 @@ public class AddFriendActivity extends AppCompatActivity {
                 searchFriend();
             }
         });
-
     }
 
     public void searchFriend(){
@@ -51,7 +50,7 @@ public class AddFriendActivity extends AppCompatActivity {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"" + "friend" + "\",");
-            sb.append("\"method\":\"" + "search" + "\",");
+            sb.append("\"method\":\"" + "searchFriend" + "\",");
             sb.append("\"phoneNo\":\"" + friendPhoneNo + "\",");
             sb.append("}");
 
@@ -122,8 +121,6 @@ public class AddFriendActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
             }else{
             Util.startToast(this, "연락처를 입력해 주세요.");
         }
