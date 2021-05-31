@@ -51,7 +51,7 @@ public class AddFriendActivity extends AppCompatActivity {
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             sb.append("\"type\":\"" + "friend" + "\",");
-            sb.append("\"method\":\"" + "search" + "\",");
+            sb.append("\"method\":\"" + "searchFriend" + "\",");
             sb.append("\"phoneNo\":\"" + friendPhoneNo + "\",");
             sb.append("}");
 
@@ -71,7 +71,7 @@ public class AddFriendActivity extends AppCompatActivity {
                 String id = json.getString("id");
                 String name = json.getString("name");
 
-                if ("search".equals(method) && "r200".equals(status)) {
+                if ("searchFriend".equals(method) && "r200".equals(status)) {
                     inflateLayout.removeView(listLayout);
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     listLayout =  inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
