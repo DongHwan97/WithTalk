@@ -57,7 +57,7 @@ public class AddFriendActivity extends AppCompatActivity {
 
             ConnectSocket.sendQueue.offer((sb.toString()));
             try {
-                Thread.sleep(1000);
+                Thread.sleep(300);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -70,7 +70,7 @@ public class AddFriendActivity extends AppCompatActivity {
                 String status = json.getString("status");
                 String id = json.getString("id");
                 String name = json.getString("name");
-                String phoneNo = json.getString("phoneNo");
+
                 if ("search".equals(method) && "r200".equals(status)) {
                     inflateLayout.removeView(listLayout);
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -96,7 +96,7 @@ public class AddFriendActivity extends AppCompatActivity {
 
                             ConnectSocket.sendQueue.offer((builder.toString()));
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(300);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

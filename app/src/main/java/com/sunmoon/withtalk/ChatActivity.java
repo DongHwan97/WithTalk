@@ -56,6 +56,10 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        Intent idIntent = getIntent();
+        String friendName = idIntent.getStringExtra("friendName");
+        String friendId = idIntent.getStringExtra("friendId");
+
         mContext = this;
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO}, 1);
@@ -69,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
         chatContentText = findViewById(R.id.chatContentText);
         chatRoomText = findViewById(R.id.chatRoomText);
 
-        chatRoomText.setText("박정우");
+        chatRoomText.setText(friendName);
         ConnectSocket.chatRoomID = chatRoomText.getText().toString();
 
         // 내부DB가져옴
