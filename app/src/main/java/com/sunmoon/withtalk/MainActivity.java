@@ -6,9 +6,11 @@ import androidx.viewpager.widget.ViewPager;
 
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -86,6 +88,21 @@ public class MainActivity extends AppCompatActivity {
         if(tts!=null){
             tts.stop();
             tts.shutdown();
+        }
+    }
+    private long time= 0;
+    @Override
+    public void onBackPressed() {
+        if(System.currentTimeMillis() - time >= 2000){
+            time=System.currentTimeMillis();
+            Toast.makeText(getApplicationContext(),"한번더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+        }
+        else if(System.currentTimeMillis() - time < 2000 ){
+            finish();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 }

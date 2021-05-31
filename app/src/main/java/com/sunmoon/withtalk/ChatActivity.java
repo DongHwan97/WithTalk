@@ -19,6 +19,7 @@ import android.speech.SpeechRecognizer;
 import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -59,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
         Intent idIntent = getIntent();
         String friendName = idIntent.getStringExtra("friendName");
         String friendId = idIntent.getStringExtra("friendId");
-
+        checkExistChatRoom(friendId);
         mContext = this;
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO}, 1);
@@ -75,6 +79,8 @@ public class ChatActivity extends AppCompatActivity {
 
         chatRoomText.setText(friendName);
         ConnectSocket.chatRoomID = chatRoomText.getText().toString();
+
+
 
         // 내부DB가져옴
 
@@ -144,36 +150,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
 
-                /*
-                while ((msg_data = msgList.poll()) != null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            LinearLayout tLayout = new LinearLayout(mContext);
 
-                            TextView dateText = new TextView(mContext);
-                            TextView contentText = new TextView(mContext);
-
-                            dateText.setText("00:09");
-                            contentText.setText(msg_data);
-
-                            //msg_data = "a#안녕" -> 상대방
-                            // "b#굳" -> 내꺼
-                            if (msg_data.split("#")[0].charAt(0) == 'b') {
-                                tLayout.setGravity(Gravity.RIGHT);
-                                tLayout.addView(dateText);
-                                tLayout.addView(contentText);
-
-                            } else {
-                                tLayout.addView(contentText);
-                                tLayout.addView(dateText);
-                            }
-
-                            chatLayout.addView(tLayout);
-                        }
-                    });
-                }
-                */
             }
         }).start();
 
@@ -246,11 +223,11 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onResults(Bundle results) {
-                ArrayList<String> matches =
+                ArrayList<String> result =
                         results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-                for(int i = 0; i < matches.size() ; i++){
-                    chatContentText.setText(matches.get(i));
+                for(int i = 0; i < result.size() ; i++){
+                    chatContentText.setText(result.get(i));
                     send(chatContentText.getText().toString());
                 }
             }
@@ -265,6 +242,77 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         };
+
+    public void checkExistChatRoom(String friendId){
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "chatRoom" + "\",");
+        sb.append("\"method\":\"" + "check" + "\",");
+        sb.append("\"senderId\":\"" + MainActivity.id + "\",");
+        sb.append("\"receiverId\":\"" + friendId + "\"");
+        sb.append("}");
+        ConnectSocket.sendQueue.offer((sb.toString()));
+
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 결과 받기
+        String result = ConnectSocket.receiveQueue.poll();
+
+        try {
+            JSONObject json = new JSONObject(result);
+            String method = json.getString("method");
+            String status = json.getString("status");
+            if ("check".equals(method)&&"r200".equals(status)) {
+                Util.startToast(this,"대화방있음");
+            }else{
+                Util.startToast(this,"대화방 없음");
+                createChatRoom(friendId);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createChatRoom(String friendId){
+        ArrayList<String> list = new ArrayList<>();
+        list.add("\""+MainActivity.id+"\"");
+        list.add("\""+friendId+"\"");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "chatRoom" + "\",");
+        sb.append("\"method\":\"" + "create" + "\",");
+        sb.append("\"senderId\":\"" + MainActivity.id + "\",");
+        sb.append("\"receiverId\":" + list + ",");
+        sb.append("\"chatRoomName\":\"" + null + "\"");
+        sb.append("}");
+        ConnectSocket.sendQueue.offer((sb.toString()));
+        Log.e("asd", "createChatRoom: "+sb.toString() );
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 결과 받기
+        String result = ConnectSocket.receiveQueue.poll();
+        Log.e("asd", "createChatRoom: "+result );
+        try {
+            JSONObject json = new JSONObject(result);
+            String method = json.getString("method");
+            String status = json.getString("status");
+            if ("create".equals(method)&&"r200".equals(status)) {
+                Util.startToast(this,"대화방생성");
+            }else{
+                Util.startToast(this,"대화방생성 실패");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void send(String message){
         Log.e("sendmessage", message);
