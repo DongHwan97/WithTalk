@@ -30,44 +30,44 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToServer();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String id = signUpIDText.getText().toString();
+                String name = signUpNameText.getText().toString();
+                String phone = signUpPhoneText.getText().toString();
+                String pw = signUpPWText.getText().toString();
+                String confirmPw = signUpConfirmPW.getText().toString();
+
+                if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10) && (pw.length() > 7) && (confirmPw.length() > 7)) {
+                    if (!pw.equals(confirmPw)) {
+                        Util.startToast(getApplicationContext(), "비밀번호가 일치하지 않습니다.");
+                    } else {
+                        sendToServer(id, name, phone, pw);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        receiveFromServer();
+                    }
+                } else {
+                    Util.startToast(getApplicationContext(), "입력하지 않은 정보가 있거나 아이디 및 비밀번호가 8자리 이상이 아닙니다.");
                 }
-                receiveFromServer();
             }
         });
     }
 
-    public void sendToServer() {
-        String id = signUpIDText.getText().toString();
-        String name = signUpNameText.getText().toString();
-        String phone = signUpPhoneText.getText().toString();
-        String pw = signUpPWText.getText().toString();
-        String confirmPw = signUpConfirmPW.getText().toString();
+    public void sendToServer(String id, String name, String pw, String phone) {
+        //회원 정보 보내기
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"member\",");
+        sb.append("\"method\":\"signUp\",");
+        sb.append("\"id\":\"" + id + "\",");
+        sb.append("\"name\":\"" + name + "\",");
+        sb.append("\"password\":\"" + pw + "\",");
+        sb.append("\"phoneNo\":\"" + phone + "\"");
+        sb.append("}");
 
-        if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10) && (pw.length() > 7) && (confirmPw.length() > 7)) {
-            if (!pw.equals(confirmPw)) {
-                Util.startToast(this, "비밀번호가 일치하지 않습니다.");
-            } else {
-                //회원 정보 보내기
-                StringBuilder sb = new StringBuilder();
-                sb.append("{");
-                sb.append("\"type\":\"member\",");
-                sb.append("\"method\":\"signUp\",");
-                sb.append("\"id\":\"" + id + "\",");
-                sb.append("\"name\":\"" + name + "\",");
-                sb.append("\"password\":\"" + pw + "\",");
-                sb.append("\"phoneNo\":\"" + phone + "\"");
-                sb.append("}");
-
-                ConnectSocket.sendQueue.offer(sb.toString());
-            }
-        } else {
-            Util.startToast(this, "아이디 및 비밀번호를 8자리 이상 입력해주세요.");
-        }
+        ConnectSocket.sendQueue.offer(sb.toString());
     }
 
     public void receiveFromServer() {

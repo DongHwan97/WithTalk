@@ -38,17 +38,19 @@ public class SearchFriendActivity extends AppCompatActivity {
         searchFriendButton = findViewById(R.id.searchFriendButton);
         searchFriendEdit = findViewById(R.id.searchFriendEdit);
 
+        String senderId = MainActivity.id;
+
         searchFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchFriend();
+                searchFriend(senderId);
             }
         });
 
 
     }
 
-    public void searchFriend(){
+    public void searchFriend(String senderId){
         inflateLayout.removeAllViews();
         String friendName = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
         if ((friendName.length() > 0) ) {
@@ -56,7 +58,7 @@ public class SearchFriendActivity extends AppCompatActivity {
             sb.append("{");
             sb.append("\"type\":\"" + "friend" + "\",");
             sb.append("\"method\":\"" + "searchRegistFriend" + "\",");
-            sb.append("\"senderId\":\"" + MainActivity.id + "\",");
+            sb.append("\"senderId\":\"" + senderId + "\",");
             sb.append("\"searchName\":\"" + friendName + "\"");
             sb.append("}");
             ConnectSocket.sendQueue.offer((sb.toString()));
@@ -158,7 +160,6 @@ public class SearchFriendActivity extends AppCompatActivity {
     }
 
     private void moveActivity(Class c){//
-
         Intent intent = new Intent(this,c);
         startActivity(intent);
     }

@@ -28,36 +28,36 @@ public class ResetPWActivity extends Activity {
         resetPWButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToServer();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String pw = newPWText.getText().toString();
+                String confirmPw = newPWConfirmText.getText().toString();
+                Intent intent = getIntent();
+                String id = intent.getStringExtra("id");
+
+                if (pw.equals(confirmPw) && (pw.length() > 7)) {
+                    sendToServer(id, pw);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    receiveFromServer();
+                } else {
+                    Util.startToast(getApplicationContext(), "비밀번호가 일치하지 않거나 8자리 이상이 아닙니다.");
                 }
-                receiveFromServer();
             }
         });
     }
 
-    public void sendToServer() {
-        String pw = newPWText.getText().toString();
-        String confirmPw = newPWConfirmText.getText().toString();
-        Intent intent = getIntent();
-        String id = (String) intent.getSerializableExtra("id");
+    public void sendToServer(String id, String pw) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"member\",");
+        sb.append("\"method\":\"resetPassword\",");
+        sb.append("\"id\":\"" + id + "\",");
+        sb.append("\"newPassword\":\"" + pw + "\"");
+        sb.append("}");
 
-        if (pw.equals(confirmPw) && (pw.length() > 7)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{");
-            sb.append("\"type\":\"member\",");
-            sb.append("\"method\":\"resetPassword\",");
-            sb.append("\"id\":\"" + id + "\",");
-            sb.append("\"newPassword\":\"" + pw + "\"");
-            sb.append("}");
-
-            ConnectSocket.sendQueue.offer(sb.toString());
-        } else {
-            Util.startToast(this, "비밀번호가 일치하지 않거나 8자리 이상이 아닙니다.");
-        }
+        ConnectSocket.sendQueue.offer(sb.toString());
     }
 
     public void receiveFromServer() {
@@ -70,7 +70,6 @@ public class ResetPWActivity extends Activity {
             Util.startToast(this, "비밀번호 재설정 실패 !");
         }
     }
-
 
     private void moveActivity(Class c) {
         Intent intent = new Intent(this, c);
