@@ -29,36 +29,36 @@ public class FindPWActivity extends AppCompatActivity {
         findPWButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToServer();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String id = findPWIDText.getText().toString();
+                String name = findPWNameText.getText().toString();
+                String phone = findPWPhoneText.getText().toString();
+
+                if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10)) {
+                    sendToServer(id, name, phone);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    receiveFromServer();
+                } else {
+                    Util.startToast(getApplicationContext(), "입력하지 않은 정보가 있습니다.");
                 }
-                receiveFromServer();
             }
         });
     }
 
-    public void sendToServer() {
-        String id = findPWIDText.getText().toString();
-        String name = findPWNameText.getText().toString();
-        String phone = findPWPhoneText.getText().toString();
+    public void sendToServer(String id, String name, String phone) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"member\",");
+        sb.append("\"method\":\"auth\",");
+        sb.append("\"id\":\"" + id + "\",");
+        sb.append("\"name\":\"" + name + "\",");
+        sb.append("\"phoneNo\":\"" + phone + "\"");
+        sb.append("}");
 
-        if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{");
-            sb.append("\"type\":\"member\",");
-            sb.append("\"method\":\"auth\",");
-            sb.append("\"id\":\"" + id + "\",");
-            sb.append("\"name\":\"" + name + "\",");
-            sb.append("\"phoneNo\":\"" + phone + "\"");
-            sb.append("}");
-
-            ConnectSocket.sendQueue.offer(sb.toString());
-        } else {
-            Util.startToast(this, "입력하지 않은 정보가 있습니다.");
-        }
+        ConnectSocket.sendQueue.offer(sb.toString());
     }
 
     public void receiveFromServer() {

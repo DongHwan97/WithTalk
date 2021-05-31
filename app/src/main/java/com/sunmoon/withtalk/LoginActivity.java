@@ -58,13 +58,20 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.loginButton:
-                    sendToServer();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    String id = loginIDText.getText().toString();
+                    String pw = loginPWText.getText().toString();
+
+                    if (id.length() > 7 && pw.length() > 7) {
+                        sendToServer(id, pw);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        receiveFromServer();
+                    } else {
+                        Util.startToast(getApplicationContext(), "입력하지 않은 정보가 있습니다.");
                     }
-                    receiveFromServer();
                     break;
                 case R.id.loginMoveFindID:
                     moveActivity(FindIDActivity.class);
@@ -79,23 +86,16 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    public void sendToServer() {
-        String id = loginIDText.getText().toString();
-        String pw = loginPWText.getText().toString();
+    public void sendToServer(String id, String pw) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "common" + "\",");
+        sb.append("\"method\":\"" + "login" + "\",");
+        sb.append("\"id\":\"" + id + "\",");
+        sb.append("\"password\":\"" + pw + "\"");
+        sb.append("}");
 
-        if ((id.length() > 7) && (pw.length() > 7)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{");
-            sb.append("\"type\":\"" + "common" + "\",");
-            sb.append("\"method\":\"" + "login" + "\",");
-            sb.append("\"id\":\"" + id + "\",");
-            sb.append("\"password\":\"" + pw + "\"");
-            sb.append("}");
-
-            ConnectSocket.sendQueue.offer((sb.toString()));
-        } else {
-            Util.startToast(this, "입력하지 않은 정보가 있습니다.");
-        }
+        ConnectSocket.sendQueue.offer((sb.toString()));
     }
 
     public void receiveFromServer() {

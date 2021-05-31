@@ -33,36 +33,35 @@ public class FindIDActivity extends AppCompatActivity {
         findIDButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendToServer();
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String name = findIDNameText.getText().toString();
+                String phone = findIDPhoneText.getText().toString();
+
+                if ((name.length() > 1) && (phone.length() > 10)) {
+                    sendToServer(name, phone);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    receiveFromServer();
+                } else {
+                    Util.startToast(getApplicationContext(),"입력하지 않은 정보가 있습니다.");
                 }
-                receiveFromServer();
             }
         });
     }
 
-    public void sendToServer() {
+    public void sendToServer(String name, String phone) {
         //서버에 보내기
-        String name = findIDNameText.getText().toString();
-        String phone = findIDPhoneText.getText().toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"member\",");
+        sb.append("\"method\":\"findId\",");
+        sb.append("\"name\":\"" + name + "\",");
+        sb.append("\"phoneNo\":\"" + phone + "\"");
+        sb.append("}");
 
-        if ((name.length() > 1) && (phone.length() > 10)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{");
-            sb.append("\"type\":\"member\",");
-            sb.append("\"method\":\"findId\",");
-            sb.append("\"name\":\"" + name + "\",");
-            sb.append("\"phoneNo\":\"" + phone + "\"");
-            sb.append("}");
-
-            ConnectSocket.sendQueue.offer(sb.toString());
-            Log.d("-----------", sb.toString());
-        } else {
-            Util.startToast(this,"회원가입되지 않은 사용자 입니다.");
-        }
+        ConnectSocket.sendQueue.offer(sb.toString());
     }
 
     public void receiveFromServer() {
@@ -73,9 +72,12 @@ public class FindIDActivity extends AppCompatActivity {
         String id = list[1];
 
         if ("r200".equals(status)) {
+            Intent intent = new Intent(this, ResetPWActivity.class);
+            intent.putExtra("id", id);
             resultIDText.setText("아이디는 " + id + "입니다.");
+            startActivity(intent);
         } else {
-            Util.startToast(this,"회원가입되지 않은 사용자 입니다.");
+            Util.startToast(this, "회원가입되지 않은 사용자 입니다.");
         }
     }
 }
