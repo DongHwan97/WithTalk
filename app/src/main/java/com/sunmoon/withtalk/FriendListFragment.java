@@ -44,11 +44,11 @@ public class FriendListFragment extends Fragment {
         refreshButton = (ImageButton)rootView.findViewById(R.id.refreshButton);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"" + "friend" + "\",");
-        sb.append("\"method\":\"" + "selectAllFriend" + "\",");
-        sb.append("\"id\":\"" + MainActivity.id + "\"");
-        sb.append("}");
+        sb.append("{")
+          .append("\"type\":\"" + "friend" + "\",")
+          .append("\"method\":\"" + "selectAllFriend" + "\",")
+          .append("\"id\":\"" + MainActivity.id + "\"")
+          .append("}");
 
         ConnectSocket.sendQueue.offer((sb.toString()));
         try {
@@ -56,6 +56,7 @@ public class FriendListFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         String result = ConnectSocket.receiveQueue.poll();
 
         try {
@@ -63,10 +64,13 @@ public class FriendListFragment extends Fragment {
             JSONArray jsonArray = json.getJSONArray("friendList");
             String method = json.getString("method");
             String status = json.getString("status");
+
             for(int i=0; i<jsonArray.length();i++){
                 JSONObject obj = jsonArray.getJSONObject(i);
                 String name = obj.getString("name");
                 String friendId = obj.getString("id");
+
+                FriendList.FRIEND_LIST.put(friendId,name);
 
                 if ("selectAllFriend".equals(method) && "r200".equals(status)) {
                     list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
@@ -82,9 +86,11 @@ public class FriendListFragment extends Fragment {
                     inflateLayout.addView(list_layout);
                 }
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return rootView;
     }
 
@@ -225,5 +231,6 @@ public class FriendListFragment extends Fragment {
         Intent intent = new Intent(getContext(),c);
         startActivity(intent);
     }
+
 
 }

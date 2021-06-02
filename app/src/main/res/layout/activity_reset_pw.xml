@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:background="@drawable/background_color"
     android:orientation="vertical"
     tools:context=".ResetPWActivity">
 
@@ -19,34 +19,46 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="비밀번호 재설정"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical">
 
         <EditText
             android:id="@+id/newPWText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_box"
             android:hint="새 비밀번호"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:padding="10dp"/>
 
         <EditText
             android:id="@+id/newPWConfirmText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_box"
             android:hint="새 비밀번호 확인"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:padding="10dp"/>
 
         <Button
             android:id="@+id/resetPWButton"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50sp"
-            android:text="비밀번호 재설정" />
+            android:layout_margin="5dp"
+            android:backgroundTint="#000000"
+            android:text="비밀번호 초기화"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:cornerRadius="10dp" />
 
     </LinearLayout>
 </LinearLayout>

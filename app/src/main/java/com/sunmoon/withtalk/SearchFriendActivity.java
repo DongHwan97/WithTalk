@@ -150,6 +150,7 @@ public class SearchFriendActivity extends AppCompatActivity {
             String status = json.getString("status");
             if ("delete".equals(method) && "r200".equals(status)) {
                 Util.startToast(this,friendId+"삭제되었습니다.");
+
             }else{
                 Util.startToast(this,"실패했습니다.");
             }

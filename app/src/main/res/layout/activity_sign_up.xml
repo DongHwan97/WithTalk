@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_color"
     android:orientation="vertical"
     tools:context=".SignUpActivity" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="80sp"
+        android:layout_height="300dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -19,53 +19,72 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="회원가입"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical">
 
         <EditText
             android:id="@+id/signUpIDText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="아이디" />
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_box"
+            android:hint="아이디"
+            android:padding="10dp" />
 
         <EditText
             android:id="@+id/signUpNameText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="이름" />
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_box"
+            android:hint="이름"
+            android:padding="10dp"/>
 
         <EditText
             android:id="@+id/signUpPhoneText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="연락처 ( - 제외 )" />
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_box"
+            android:hint="연락처 ( - 제외 )"
+            android:padding="10dp"/>
 
         <EditText
             android:id="@+id/signUpPWText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_box"
             android:hint="비밀번호"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:padding="10dp"/>
 
         <EditText
             android:id="@+id/signUpConfirmPW"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/white_box"
             android:hint="비밀번호 확인"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:padding="10dp"/>
 
         <Button
             android:id="@+id/signUpButton"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50sp"
-            android:text="회원가입" />
+            android:layout_margin="5dp"
+            android:text="회원가입"
+            android:textStyle="bold"
+            app:cornerRadius="10dp" />
     </LinearLayout>
 
 </LinearLayout>

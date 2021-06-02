@@ -18,6 +18,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/chatRoomCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/chatRoomNameText"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/chatRoomDateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
