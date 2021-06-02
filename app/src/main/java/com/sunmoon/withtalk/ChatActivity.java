@@ -53,9 +53,6 @@ public class ChatActivity extends AppCompatActivity {
 
     Context mContext;
 
-    DatabaseHelper dbHelper;
-    SQLiteDatabase sqlDB;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

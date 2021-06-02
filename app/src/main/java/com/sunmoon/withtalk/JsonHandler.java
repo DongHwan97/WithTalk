@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
@@ -18,12 +19,14 @@ public class JsonHandler {
     static JSONObject json;
     static String method;
     static ArrayList<String> lists;
+    static JSONArray jsonArray;
 
     public static ArrayList<String> messageReceived() {
         if (ConnectSocket.receiveQueue.peek() != null) {
             String result = ConnectSocket.receiveQueue.poll();
             try {
                 json = new JSONObject(result);
+                Log.d("응답", result.toString());
 
                 method = json.getString("method");
                 Log.d("+++++++++++", "얘가 문제니?" + method);
@@ -34,6 +37,7 @@ public class JsonHandler {
                     case "resetPassword":
                     case "logout":
                     case "delete":
+                    case "insertFriend":
                         lists = new ArrayList<>();
                         lists.add(json.getString("status"));
 
@@ -48,13 +52,31 @@ public class JsonHandler {
                         lists = new ArrayList<>();
                         lists.add(json.getString("status"));
 
-                        JSONArray jsonArray = json.getJSONArray("friendList");
+                        jsonArray = json.getJSONArray("friendList");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject obj = jsonArray.getJSONObject(i);
-                            lists.add(obj.getString("name"));
                             lists.add(obj.getString("id"));
+                            lists.add(obj.getString("name"));
                         }
 
+                        break;
+                    case "searchFriend":
+                        lists = new ArrayList<>();
+                        lists.add(json.getString("status"));
+                        lists.add(json.getString("id"));
+                        lists.add(json.getString("name"));
+                        lists.add(json.getString("phoneNo"));
+                        break;
+                    case "searchRegistFriend":
+                        lists = new ArrayList<>();
+                        lists.add(json.getString("status"));
+
+                        jsonArray = json.getJSONArray("registFriendList");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject obj = jsonArray.getJSONObject(i);
+                            lists.add(obj.getString("id"));
+                            lists.add(obj.getString("name"));
+                        }
                         break;
                 }
             } catch (JSONException e) {

@@ -20,6 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 
 public class FriendListFragment extends Fragment {
 
@@ -36,13 +38,24 @@ public class FriendListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = (ViewGroup)inflater.inflate(R.layout.fragment_friend_list, container, false);
-        inflateLayout = (LinearLayout)rootView.findViewById(R.id.friend_layout);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_friend_list, container, false);
+        inflateLayout = (LinearLayout) rootView.findViewById(R.id.friend_layout);
 
-        moveSearchFriendButton = (ImageButton)rootView.findViewById(R.id.moveSearchFriendButton);
-        moveAddFriendButton = (ImageButton)rootView.findViewById(R.id.moveAddFriendButton);
-        refreshButton = (ImageButton)rootView.findViewById(R.id.refreshButton);
+        moveSearchFriendButton = (ImageButton) rootView.findViewById(R.id.moveSearchFriendButton);
+        moveAddFriendButton = (ImageButton) rootView.findViewById(R.id.moveAddFriendButton);
+        refreshButton = (ImageButton) rootView.findViewById(R.id.refreshButton);
 
+        sendSelectAllFriend();
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        receiveSelectAllFriend(inflater);
+        return rootView;
+    }
+
+    public void sendSelectAllFriend() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"type\":\"" + "friend" + "\",");
@@ -51,41 +64,33 @@ public class FriendListFragment extends Fragment {
         sb.append("}");
 
         ConnectSocket.sendQueue.offer((sb.toString()));
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String result = ConnectSocket.receiveQueue.poll();
+    }
 
-        try {
-            JSONObject json = new JSONObject(result);
-            JSONArray jsonArray = json.getJSONArray("friendList");
-            String method = json.getString("method");
-            String status = json.getString("status");
-            for(int i=0; i<jsonArray.length();i++){
-                JSONObject obj = jsonArray.getJSONObject(i);
-                String name = obj.getString("name");
-                String friendId = obj.getString("id");
+    public void receiveSelectAllFriend(LayoutInflater inflater) {
+        ArrayList<String> lists = JsonHandler.messageReceived();
+        JsonHandler.messageReceived();
 
-                if ("selectAllFriend".equals(method) && "r200".equals(status)) {
-                    list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
-                    friendNameText = (TextView)list_layout.findViewById(R.id.friendNameText);
-                    friendNameText.setText(name);
-                    list_layout.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            showDialog(name, friendId);
-                            return true;
-                        }
-                    });
-                    inflateLayout.addView(list_layout);
-                }
+        String status = lists.get(0);
+        Log.d("++++++++++", status);
+
+        if ("r200".equals(status)) {
+            for (int i = 1; i < lists.size(); i = i + 2) {
+                String friendId = lists.get(i);
+                String name = lists.get(i + 1);
+
+                list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+                friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
+                friendNameText.setText(name);
+                list_layout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showDialog(friendId, name);
+                        return true;
+                    }
+                });
+                inflateLayout.addView(list_layout);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        return rootView;
     }
 
     @Override
@@ -114,19 +119,26 @@ public class FriendListFragment extends Fragment {
         });
     }
 
-    public void showDialog(String friendName, String friendId){
+    public void showDialog(String friendId, String friendName) {
         final CharSequence[] items = {"1:1 대화", "친구 삭제"};
         AlertDialog.Builder friendBuilder = new AlertDialog.Builder(getActivity());
         friendBuilder.setTitle("친구 관리");
         friendBuilder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.e( "onClick: ", Integer.toString(which)+"입니다");
-                switch (which){
-                    case 0: moveChatRoom(friendName, friendId);
+                Log.e("onClick: ", Integer.toString(which) + "입니다");
+                switch (which) {
+                    case 0:
+                        moveChatRoom(friendName, friendId);
                         break;
-                    case 1: deleteFriend(friendId);
-                        Util.startToast(getContext(),"친구삭제 되었습니다");
+                    case 1:
+                        sendDeleteFriend(friendId);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        receiveDeleteFriend(friendId);
                         break;
                 }
             }
@@ -134,14 +146,14 @@ public class FriendListFragment extends Fragment {
         friendBuilder.show();
     }
 
-    public void moveChatRoom(String friendName,String friendId){
+    public void moveChatRoom(String friendName, String friendId) {
         Intent intent = new Intent(getContext(), ChatActivity.class);
         intent.putExtra("friendName", friendName);
         intent.putExtra("friendId", friendId);
         startActivity(intent);
     }
 
-    public void deleteFriend(String friendId){
+    public void sendDeleteFriend(String friendId) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"type\":\"" + "friend" + "\",");
@@ -150,30 +162,22 @@ public class FriendListFragment extends Fragment {
         sb.append("\"friendId\":\"" + friendId + "\"");
         sb.append("}");
         ConnectSocket.sendQueue.offer((sb.toString()));
+    }
 
-        try {
-            Thread.sleep(300);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // 결과 받기
-        String result = ConnectSocket.receiveQueue.poll();
-        try {
-            JSONObject json = new JSONObject(result);
-            String method = json.getString("method");
-            String status = json.getString("status");
-            if ("delete".equals(method) && "r200".equals(status)) {
-                Util.startToast(getContext(),friendId+"삭제되었습니다.");
-                refresh();
-            }else{
-                Util.startToast(getContext(),"실패했습니다.");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void receiveDeleteFriend(String friendId) {
+        ArrayList<String> lists = JsonHandler.messageReceived();
+
+        String status = lists.get(0);
+
+        if ("r200".equals(status)) {
+            Util.startToast(getContext(), friendId + "가 삭제되었습니다.");
+            refresh();
+        } else {
+            Util.startToast(getContext(), "실패했습니다.");
         }
     }
 
-    public void refresh(){
+    public void refresh() {
         inflateLayout.removeAllViews();
         StringBuilder sb = new StringBuilder();
         sb.append("{");
@@ -195,15 +199,15 @@ public class FriendListFragment extends Fragment {
             JSONArray jsonArray = json.getJSONArray("friendList");
             String method = json.getString("method");
             String status = json.getString("status");
-            for(int i=0; i<jsonArray.length();i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
                 String name = obj.getString("name");
                 String friendId = obj.getString("id");
 
                 if ("selectAllFriend".equals(method) && "r200".equals(status)) {
                     LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
-                    list_layout = inflater.inflate(R.layout.friendlistlayout,inflateLayout,false);
-                    friendNameText = (TextView)list_layout.findViewById(R.id.friendNameText);
+                    list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+                    friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
                     friendNameText.setText(name);
                     list_layout.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
@@ -220,9 +224,9 @@ public class FriendListFragment extends Fragment {
         }
     }
 
-    private void moveActivity(Class c){//
+    private void moveActivity(Class c) {//
 
-        Intent intent = new Intent(getContext(),c);
+        Intent intent = new Intent(getContext(), c);
         startActivity(intent);
     }
 

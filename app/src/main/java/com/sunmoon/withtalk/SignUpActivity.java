@@ -57,7 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void sendToServer(String id, String name, String pw, String phone) {
+    public void sendToServer(String id, String name, String phone, String pw) {
         //회원 정보 보내기
         StringBuilder sb = new StringBuilder();
         sb.append("{");
@@ -69,6 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
         sb.append("\"phoneNo\":\"" + phone + "\"");
         sb.append("}");
 
+        Log.d("----------------", sb.toString());
         ConnectSocket.sendQueue.offer(sb.toString());
     }
 
@@ -76,7 +77,7 @@ public class SignUpActivity extends AppCompatActivity {
         List<String> lists = JsonHandler.messageReceived();
 
         String status = lists.get(0);
-
+        Log.d("----------", status);
         if ("r200".equals(status)) {
             Util.startToast(this, "회원가입에 성공하셨습니다.");
             moveActivity(LoginActivity.class);
