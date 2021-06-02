@@ -35,7 +35,7 @@ public class FindPWActivity extends AppCompatActivity {
                 String name = findPWNameText.getText().toString();
                 String phone = findPWPhoneText.getText().toString();
 
-                if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10)) {
+                if ((id.length() > 6) && (name.length() > 1) && (phone.length() > 10)) {
                     sendToServer(id, name, phone);
                     try {
                         Thread.sleep(1000);

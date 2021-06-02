@@ -1,44 +1,30 @@
 package com.sunmoon.withtalk;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Drawable;
-import android.graphics.fonts.Font;
-import android.media.Image;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 //전송 구현 스레드 구현
 public class ChatActivity extends AppCompatActivity {
@@ -60,7 +46,12 @@ public class ChatActivity extends AppCompatActivity {
         Intent idIntent = getIntent();
         String friendName = idIntent.getStringExtra("friendName");
         String friendId = idIntent.getStringExtra("friendId");
-        checkExistChatRoom(friendId);
+        Intent idIntent2 = getIntent();
+        String friendList= idIntent2.getStringExtra("friendList");
+        String chatRoomId = idIntent2.getStringExtra("chatRoomId");
+
+        Log.e( "onCreate: ", friendList+chatRoomId);
+
         mContext = this;
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO}, 1);
@@ -74,12 +65,18 @@ public class ChatActivity extends AppCompatActivity {
         chatContentText = findViewById(R.id.chatContentText);
         chatRoomText = findViewById(R.id.chatRoomText);
 
-        chatRoomText.setText(friendName);
+        if(friendName==null){
+            chatRoomText.setText(friendList);
+        }else{
+            chatRoomText.setText(friendName);
+        }
+
         ConnectSocket.chatRoomID = chatRoomText.getText().toString();
 
 
 
         // 내부DB가져옴
+
 
 
 
@@ -239,40 +236,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         };
-
-    public void checkExistChatRoom(String friendId){
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"" + "chatRoom" + "\",");
-        sb.append("\"method\":\"" + "check" + "\",");
-        sb.append("\"senderId\":\"" + MainActivity.id + "\",");
-        sb.append("\"receiverId\":\"" + friendId + "\"");
-        sb.append("}");
-        ConnectSocket.sendQueue.offer((sb.toString()));
-
-        try {
-            Thread.sleep(300);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // 결과 받기
-        String result = ConnectSocket.receiveQueue.poll();
-
-        try {
-            JSONObject json = new JSONObject(result);
-            String method = json.getString("method");
-            String status = json.getString("status");
-            if ("check".equals(method)&&"r200".equals(status)) {
-                Util.startToast(this,"대화방있음");
-            }else{
-                Util.startToast(this,"대화방 없음");
-                createChatRoom(friendId);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void createChatRoom(String friendId){
         ArrayList<String> list = new ArrayList<>();
