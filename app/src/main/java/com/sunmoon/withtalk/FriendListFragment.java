@@ -68,16 +68,16 @@ public class FriendListFragment extends Fragment {
 
     public void receiveSelectAllFriend(LayoutInflater inflater) {
         ArrayList<String> lists = JsonHandler.messageReceived();
-        JsonHandler.messageReceived();
+
 
         String status = lists.get(0);
-        Log.d("++++++++++", status);
+
 
         if ("r200".equals(status)) {
             for (int i = 1; i < lists.size(); i = i + 2) {
                 String friendId = lists.get(i);
                 String name = lists.get(i + 1);
-
+                FriendList.FRIEND_LIST.put(friendId,name);
                 list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
                 friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
                 friendNameText.setText(name);
