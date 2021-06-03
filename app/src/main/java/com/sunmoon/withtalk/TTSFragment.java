@@ -144,7 +144,9 @@ public class TTSFragment extends Fragment {
 
             for(int i = 0; i < result.size() ; i++){
                 nameView.setText(result.get(i));
-                moveActivity(ChatActivity.class);
+                Intent intent = new Intent(getContext(), ChatActivity.class);
+                intent.putExtra("ttsName", result.get(i));
+                startActivity(intent);
             }
         }
 
@@ -158,10 +160,5 @@ public class TTSFragment extends Fragment {
 
         }
     };
-
-    private void moveActivity(Class c){//이동
-        Intent intent = new Intent(getContext(),c);
-        startActivity(intent);
-    }
 
 }

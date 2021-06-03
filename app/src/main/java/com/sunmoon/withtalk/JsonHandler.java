@@ -29,7 +29,7 @@ public class JsonHandler {
                 Log.d("응답", result.toString());
 
                 method = json.getString("method");
-                Log.d("+++++++++++", "얘가 문제니?" + method);
+
                 switch (method) {
                     case "login":
                     case "signUp":
@@ -38,6 +38,7 @@ public class JsonHandler {
                     case "logout":
                     case "delete":
                     case "insertFriend":
+                    case "exit":
                         lists = new ArrayList<>();
                         lists.add(json.getString("status"));
 
@@ -78,6 +79,31 @@ public class JsonHandler {
                             lists.add(obj.getString("name"));
                         }
                         break;
+                    case "selectAllChatRoom":
+                        lists = new ArrayList<>();
+                        lists.add(json.getString("status"));
+                        jsonArray = json.getJSONArray("chatRoomList");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject obj = jsonArray.getJSONObject(i);
+                            lists.add(obj.getString("chatRoomNo"));
+                            JSONArray memberIdList = obj.getJSONArray("memberIdList");
+                            StringBuilder memberList_str = new StringBuilder();
+                            int j;
+                            for (j=0; j<memberIdList.length();j++){
+                                if(!MainActivity.id.equals(memberIdList.getString(j))){
+                                    memberList_str.append(FriendList.FRIEND_LIST.get(memberIdList.getString(j)));
+                                    if (j < memberIdList.length()-1) {
+                                        memberList_str.append(", ");
+                                    }
+                                }
+                                Log.e("messageReceived: ", memberList_str.toString());
+                            }
+                            lists.add(memberList_str.toString());
+                            lists.add(Integer.toString(j));
+                        }
+
+                        break;
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

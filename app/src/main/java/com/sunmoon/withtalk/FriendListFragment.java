@@ -43,11 +43,11 @@ public class FriendListFragment extends Fragment {
 
         moveSearchFriendButton = (ImageButton) rootView.findViewById(R.id.moveSearchFriendButton);
         moveAddFriendButton = (ImageButton) rootView.findViewById(R.id.moveAddFriendButton);
-        refreshButton = (ImageButton) rootView.findViewById(R.id.refreshButton);
+        refreshButton = (ImageButton) rootView.findViewById(R.id.friendListRefreshButton);
 
         sendSelectAllFriend();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(300);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,14 +69,13 @@ public class FriendListFragment extends Fragment {
     public void receiveSelectAllFriend(LayoutInflater inflater) {
         ArrayList<String> lists = JsonHandler.messageReceived();
 
-
         String status = lists.get(0);
 
         if ("r200".equals(status)) {
             for (int i = 1; i < lists.size(); i = i + 2) {
                 String friendId = lists.get(i);
                 String name = lists.get(i + 1);
-
+                FriendList.FRIEND_LIST.put(friendId,name);
                 list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
                 friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
                 friendNameText.setText(name);
@@ -133,7 +132,7 @@ public class FriendListFragment extends Fragment {
                     case 1:
                         sendDeleteFriend(friendId);
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(300);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -149,6 +148,8 @@ public class FriendListFragment extends Fragment {
         Intent intent = new Intent(getContext(), ChatActivity.class);
         intent.putExtra("friendName", friendName);
         intent.putExtra("friendId", friendId);
+        String chatRoomType = "dm";
+        intent.putExtra("chatRoomType", chatRoomType);
         startActivity(intent);
     }
 
