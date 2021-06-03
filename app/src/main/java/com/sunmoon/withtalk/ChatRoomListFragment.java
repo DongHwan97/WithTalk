@@ -22,6 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+
 
 public class ChatRoomListFragment extends Fragment {
 
@@ -29,7 +31,7 @@ public class ChatRoomListFragment extends Fragment {
     TextView listNameText, listDateText, countText;
     View list_layout;
     LinearLayout inflateLayout;
-    ImageButton moveSearchChatRoom;
+    ImageButton moveSearchChatRoom, refreshButton;
 
     public static ChatRoomListFragment newInstance() {
         ChatRoomListFragment fragment = new ChatRoomListFragment();
@@ -42,13 +44,28 @@ public class ChatRoomListFragment extends Fragment {
         inflateLayout = (LinearLayout)rootView.findViewById(R.id.chatlist_layout);
 
         moveSearchChatRoom = (ImageButton)rootView.findViewById(R.id.moveSearchChatRoom);
+        refreshButton = (ImageButton) rootView.findViewById(R.id.chatRoomListRefreshButton);
+        sendSelectAllChatRoom();
 
-
-        for (String key : FriendList.FRIEND_LIST.keySet()) {
-            Log.d("adfa", "key : " + key + " value : " + FriendList.FRIEND_LIST.get(key));
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
+        receiveSelectAllChatRoom(inflater);
 
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refresh(inflater);
+            }
+        });
+
+        return rootView;
+    }
+
+    public void sendSelectAllChatRoom() {
         StringBuilder sb = new StringBuilder();
         sb.append("{")
                 .append("\"type\":\"" + "chatRoom" + "\",")
@@ -58,72 +75,48 @@ public class ChatRoomListFragment extends Fragment {
                 .append("}");
 
         ConnectSocket.sendQueue.offer((sb.toString()));
+    }
 
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void receiveSelectAllChatRoom(LayoutInflater inflater) {
+        ArrayList<String> lists = JsonHandler.messageReceived();
 
-        String result = ConnectSocket.receiveQueue.poll();
+        String status = lists.get(0);
 
-        try {
-            JSONObject json = new JSONObject(result);
-            JSONArray jsonArray = json.getJSONArray("chatRoomList");
-            String method = json.getString("method");
-            String status = json.getString("status");
+        if ("r200".equals(status)) {
+            for (int i = 1; i < lists.size(); i = i + 3) {
+                String chatRoomNo = lists.get(i);
+                String memberList = lists.get(i + 1);
+                String count = lists.get(i+2);
 
-            for(int i=0; i<jsonArray.length();i++){
-                JSONObject obj = jsonArray.getJSONObject(i);
-                String chatRoomNo = obj.getString("chatRoomNo");
-                JSONArray memberIdList = obj.getJSONArray("memberIdList");
-                String chatRoomType = obj.getString("chatRoomType");
+                list_layout = inflater.inflate(R.layout.chatroomlistlayout,inflateLayout,false);
+                listNameText = (TextView)list_layout.findViewById(R.id.chatRoomNameText);
+                listDateText = (TextView)list_layout.findViewById(R.id.chatRoomDateText);
+                countText = (TextView)list_layout.findViewById(R.id.chatRoomCountText);
 
-                StringBuilder memberList_str = new StringBuilder();
-
-                for (int j=0; j<memberIdList.length();j++){
-                    if(!MainActivity.id.equals(memberIdList.getString(j))){
-                        memberList_str.append(FriendList.FRIEND_LIST.get(memberIdList.getString(j)));
-                        if (j < memberIdList.length()-1) {
-                            memberList_str.append(", ");
-                        }
-                    }
+                listNameText.setText(memberList);
+                listDateText.setText("00:00");
+                if(count.length()==2){
+                    countText.setText("");
+                }else{
+                    countText.setText(count);
                 }
 
-
-                if ("selectAllChatRoom".equals(method) && "r200".equals(status)) {
-                    list_layout = inflater.inflate(R.layout.chatroomlistlayout,inflateLayout,false);
-                    listNameText = (TextView)list_layout.findViewById(R.id.chatRoomNameText);
-                    listDateText = (TextView)list_layout.findViewById(R.id.chatRoomDateText);
-                    countText = (TextView)list_layout.findViewById(R.id.chatRoomCountText);
-                    listNameText.setText(memberList_str.toString());
-                    listDateText.setText("00:00");
-                    if(memberIdList.length()==2){
-                        countText.setText("");
-                    }else{
-                        countText.setText(Integer.toString(memberIdList.length()));
+                list_layout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showDialog(chatRoomNo);
+                        return true;
                     }
-                    list_layout.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            showDialog();
-                            return true;
-                        }
-                    });
-                    list_layout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            moveChatRoom(memberList_str.toString(), chatRoomNo);
-                        }
-                    });
-                    inflateLayout.addView(list_layout);
-                }
+                });
+                list_layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        moveChatRoom(memberList.toString(), chatRoomNo);
+                    }
+                });
+                inflateLayout.addView(list_layout);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-
-        return rootView;
     }
 
     @Override
@@ -136,19 +129,28 @@ public class ChatRoomListFragment extends Fragment {
                 moveActivity(SearchChatRoomActivity.class);
             }
         });
+
     }
 
-    public void showDialog(){
+    public void showDialog(String chatRoomNo){
         final CharSequence[] items = {"대화방 이름 변경", "대화방 나가기"};
         AlertDialog.Builder chatRoomBuilder = new AlertDialog.Builder(getActivity());
         chatRoomBuilder.setTitle("대화방 관리");
         chatRoomBuilder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Log.e("onClick: ", Integer.toString(which) + "입니다");
                 switch (which){
-                    case 0: changeChatRoomName();
+                    case 0: changeChatRoomName(chatRoomNo);
                         break;
-                    case 1: deleteChatRoom();
+                    case 1:
+                        sendExitChatRoom(chatRoomNo);
+                        try {
+                            Thread.sleep(300);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        receiveDeleteChatRoom();
                         break;
                 }
             }
@@ -156,7 +158,7 @@ public class ChatRoomListFragment extends Fragment {
         chatRoomBuilder.show();
     }
 
-    public void changeChatRoomName(){
+    public void changeChatRoomName(String chatRoomNo){
         final EditText editText = new EditText(getContext());
         AlertDialog.Builder changeChatRoomNameDialog = new AlertDialog.Builder(getContext());
         changeChatRoomNameDialog.setTitle("대화방 이름 변경");
@@ -171,15 +173,50 @@ public class ChatRoomListFragment extends Fragment {
         changeChatRoomNameDialog.show();
     }
 
-    public void deleteChatRoom(){
-
+    public void sendExitChatRoom(String chatRoomNo) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "chatRoom" + "\",");
+        sb.append("\"method\":\"" + "exit" + "\",");
+        sb.append("\"senderId\":\"" + MainActivity.id + "\",");
+        sb.append("\"chatRoomNo\":\"" + chatRoomNo + "\"");
+        sb.append("}");
+        ConnectSocket.sendQueue.offer((sb.toString()));
     }
+
+    public void receiveDeleteChatRoom() {
+        ArrayList<String> lists = JsonHandler.messageReceived();
+
+        String status = lists.get(0);
+
+        if ("r200".equals(status)) {
+            Util.startToast(getContext(), "대화방 나가기 성공");
+
+        } else {
+            Util.startToast(getContext(), "실패했습니다.");
+        }
+    }
+
+    public void refresh(LayoutInflater inflater){
+        inflateLayout.removeAllViews();
+        sendSelectAllChatRoom();
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        receiveSelectAllChatRoom(inflater);
+    }
+
+
+
     public void moveChatRoom(String friendList,String chatRoomId){
         Intent intent = new Intent(getContext(), ChatActivity.class);
         intent.putExtra("friendList", friendList);
         intent.putExtra("chatRoomId", chatRoomId);
         startActivity(intent);
     }
+
     private void moveActivity(Class c){// String name이름 별로 구별하면서 이름 보내서 텍스트 세팅
 
         Intent intent = new Intent(getActivity(),c);

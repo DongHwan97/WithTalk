@@ -22,7 +22,7 @@ public class ConnectSocket extends Activity {
 
     String received_msg;
 
-    public static String chatRoomID;
+
     public static Queue<String> receiveQueue = new LinkedList<>();
     public static Queue<String> sendQueue = new LinkedList<>();
 
