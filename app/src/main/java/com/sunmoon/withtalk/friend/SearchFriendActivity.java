@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.friend;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,12 +15,14 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.chatroom.ChatActivity;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.DataAdapter;
+import com.sunmoon.withtalk.common.Friend;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.common.Util;
+import com.sunmoon.withtalk.common.JsonHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,8 +123,8 @@ public class SearchFriendActivity extends AppCompatActivity {
     public void sendDeleteFriend(String friendId) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append("\"type\":\"" + "friend" + "\",");
-        sb.append("\"method\":\"" + "delete" + "\",");
+        sb.append("\"type\":\"friend\",");
+        sb.append("\"method\":\"delete\",");
         sb.append("\"memberId\":\"" + MainActivity.id + "\",");
         sb.append("\"friendId\":\"" + friendId + "\"");
         sb.append("}");

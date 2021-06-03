@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.friend;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -16,14 +16,18 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sunmoon.withtalk.common.JsonHandler;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.chatroom.ChatActivity;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.Friend;
+import com.sunmoon.withtalk.common.FriendList;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.common.Util;
+import com.sunmoon.withtalk.common.DataAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
-
 
 public class FriendListFragment extends Fragment {
     ViewGroup rootView;
@@ -98,8 +102,8 @@ public class FriendListFragment extends Fragment {
     public void sendSelectAllFriend() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append("\"type\":\"" + "friend" + "\",");
-        sb.append("\"method\":\"" + "selectAllFriend" + "\",");
+        sb.append("\"type\":\"friend\",");
+        sb.append("\"method\":\"selectAllFriend\",");
         sb.append("\"id\":\"" + MainActivity.id + "\"");
         sb.append("}");
 
@@ -110,12 +114,13 @@ public class FriendListFragment extends Fragment {
         ArrayList<String> lists = JsonHandler.messageReceived();
         String status = lists.get(0);
 
-        DataAdapter mDbHelper = new DataAdapter(getContext());
+        DataAdapter mDbHelper = new DataAdapter(getContext().getApplicationContext());
         mDbHelper.createDatabase();
         mDbHelper.open();
 
         Friend friend = null;
-        if ("r200".equals(status) && lists.get(1) != null && lists.get(2) != null) {
+
+        if ("r200".equals(status) && lists.size() != 1) {
             for (int i = 1; i < lists.size(); i = i + 2) {
                 String friendId = lists.get(i);
                 String name = lists.get(i + 1);
@@ -170,6 +175,7 @@ public class FriendListFragment extends Fragment {
     }
 
     public void showDialog(String friendId, String friendName) {
+        Log.d("Friend1", friendId);
         final CharSequence[] items = {"1:1 대화", "친구 삭제"};
         AlertDialog.Builder friendBuilder = new AlertDialog.Builder(getActivity());
         friendBuilder.setTitle("친구 관리");
@@ -183,6 +189,7 @@ public class FriendListFragment extends Fragment {
                         break;
                     case 1:
                         sendDeleteFriend(friendId);
+
                         try {
                             Thread.sleep(1000);
                         } catch (Exception e) {
@@ -213,6 +220,7 @@ public class FriendListFragment extends Fragment {
         sb.append("\"memberId\":\"" + MainActivity.id + "\",");
         sb.append("\"friendId\":\"" + friendId + "\"");
         sb.append("}");
+        Log.d("Friend2", friendId);
 
         Log.d("++++++++", sb.toString());
         ConnectSocket.sendQueue.offer((sb.toString()));
@@ -221,10 +229,11 @@ public class FriendListFragment extends Fragment {
     public void receiveDeleteFriend(String friendId) {
         ArrayList<String> lists = JsonHandler.messageReceived();
         String status = lists.get(0);
+        Log.d("Friend3", friendId);
 
         if ("r200".equals(status)) {
             //내부 디비에서 삭제하기
-            DataAdapter mDbHelper = new DataAdapter(getContext());
+            DataAdapter mDbHelper = new DataAdapter(getContext().getApplicationContext());
             mDbHelper.createDatabase();
             mDbHelper.open();
 
@@ -234,6 +243,7 @@ public class FriendListFragment extends Fragment {
             mDbHelper.close();
 
             Util.startToast(getContext(), friendId + "가 삭제되었습니다.");
+            Log.d("Friend4", friendId);
             refresh();
         } else {
             Util.startToast(getContext(), "실패했습니다.");
@@ -255,6 +265,8 @@ public class FriendListFragment extends Fragment {
             String friendId = friend.id;
             String name = friend.name;
 
+            Log.d("FriendID22", friendId + " , " + name);
+
             LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
             list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
             friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
@@ -262,7 +274,7 @@ public class FriendListFragment extends Fragment {
             list_layout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    showDialog(name, friendId);
+                    showDialog(friendId, name);
                     return true;
                 }
             });

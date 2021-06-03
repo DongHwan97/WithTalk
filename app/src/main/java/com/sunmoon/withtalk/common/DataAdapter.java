@@ -1,14 +1,11 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.common;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.io.IOException;
-import java.sql.Array;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +13,8 @@ public class DataAdapter {
     protected static final String TAG = "DataAdapter";
 
     // TODO : TABLE 이름을 명시해야함
-    protected static final String FRIEND_TABLE = "friend";
-    protected static final String CHATROOM_TABLE = "chatroom";
+    protected static final String FRIEND_TABLE = "FRIEND";
+    protected static final String CHATROOM_TABLE = "CHATROOM";
 
     private final Context mContext;
     private SQLiteDatabase mDb;

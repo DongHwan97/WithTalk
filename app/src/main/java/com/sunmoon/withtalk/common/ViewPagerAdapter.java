@@ -5,9 +5,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.sunmoon.withtalk.friend.FriendListFragment;
 import com.sunmoon.withtalk.chatroom.TTSFragment;
 import com.sunmoon.withtalk.chatroom.ChatRoomListFragment;
-import com.sunmoon.withtalk.friend.FriendListFragment;
+
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 

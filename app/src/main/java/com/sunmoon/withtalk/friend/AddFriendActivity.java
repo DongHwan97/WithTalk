@@ -1,9 +1,10 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.friend;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -11,9 +12,16 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.Friend;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.common.Util;
 
+import java.util.ArrayList;
+
+import com.sunmoon.withtalk.common.JsonHandler;
+import com.sunmoon.withtalk.common.DataAdapter;
 
 public class AddFriendActivity extends AppCompatActivity {
     ImageButton searchAddFriendButton;
@@ -53,20 +61,21 @@ public class AddFriendActivity extends AppCompatActivity {
     public void sendToSearchFriend(String friendPhoneNo) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append("\"type\":\"" + "friend" + "\",");
-        sb.append("\"method\":\"" + "searchFriend" + "\",");
+        sb.append("\"type\":\"friend\",");
+        sb.append("\"method\":\"searchFriend\",");
         sb.append("\"phoneNo\":\"" + friendPhoneNo + "\"");
         sb.append("}");
+
+        Log.d("SendToSearchFriend", sb.toString());
 
         ConnectSocket.sendQueue.offer((sb.toString()));
     }
 
     public void receiveFromSearchFriend() {
         ArrayList<String> lists = JsonHandler.messageReceived();
-
         String status = lists.get(0);
 
-        if ("r200".equals(status)) {
+        if ("r200".equals(status) && lists.size() != 1) {
             String id = lists.get(1);
             String name = lists.get(2);
 
@@ -80,12 +89,13 @@ public class AddFriendActivity extends AppCompatActivity {
             inflateLayout.addView(listLayout);
 
             String friendId = id;
+            Log.d("------", friendId);
             friendAddButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {//친구추가
                     sendToInsertFriend(friendId);
                     try {
-                        Thread.sleep(300);
+                        Thread.sleep(1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -100,11 +110,12 @@ public class AddFriendActivity extends AppCompatActivity {
     public void sendToInsertFriend(String friendId) {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
-        builder.append("\"type\":\"" + "friend" + "\",");
-        builder.append("\"method\":\"" + "insertFriend" + "\",");
+        builder.append("\"type\":\"friend\",");
+        builder.append("\"method\":\"insertFriend\",");
         builder.append("\"memberId\":\"" + MainActivity.id + "\",");
         builder.append("\"friendId\":\"" + friendId + "\"");
         builder.append("}");
+        Log.d("------2", friendId);
 
         ConnectSocket.sendQueue.offer((builder.toString()));
     }
@@ -119,6 +130,7 @@ public class AddFriendActivity extends AppCompatActivity {
             mDbHelper.open();
 
             Friend friend = new Friend(friendId, name);
+            Log.d("------3", friendId);
             mDbHelper.insertFriend(friend);
 
             mDbHelper.close();

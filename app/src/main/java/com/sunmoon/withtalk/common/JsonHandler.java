@@ -1,10 +1,13 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.common;
 
 import android.app.Activity;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.FriendList;
+import com.sunmoon.withtalk.common.MainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;

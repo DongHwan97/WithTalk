@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.sunmoon.withtalk.common.DataAdapter;
 import com.sunmoon.withtalk.R;
 import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.Friend;
 import com.sunmoon.withtalk.common.Util;
 import com.sunmoon.withtalk.user.LoginActivity;
 
