@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.chatroom;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.ConnectSocket;
 
 
 public class SearchChatRoomActivity extends AppCompatActivity {

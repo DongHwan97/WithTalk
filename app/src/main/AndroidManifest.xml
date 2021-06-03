@@ -15,9 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WithTalk">
-        <activity android:name=".groupChatRoomActivity"></activity>
+        <activity android:name=".chatroom.groupChatRoomActivity"></activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".user.LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,31 +26,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ResetPWActivity"
+            android:name=".user.ResetPWActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ChatActivity"
+            android:name=".chatroom.ChatActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SearchChatRoomActivity"
+            android:name=".chatroom.SearchChatRoomActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".AddFriendActivity"
+            android:name=".friend.AddFriendActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SearchFriendActivity"
+            android:name=".friend.SearchFriendActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FindIDActivity"
+            android:name=".user.FindIDActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FindPWActivity"
+            android:name=".user.FindPWActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SignUpActivity"
+            android:name=".user.SignUpActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivity"
+            android:name=".common.MainActivity"
             android:screenOrientation="portrait" />
     </application>
 

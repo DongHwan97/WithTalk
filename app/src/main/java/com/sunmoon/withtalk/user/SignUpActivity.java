@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.user;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.Util;
+import com.sunmoon.withtalk.user.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +77,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void receiveFromServer() {
-        List<String> lists = JsonHandler.messageReceived();
+        List<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
         Log.d("----------", status);
