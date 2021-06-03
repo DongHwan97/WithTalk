@@ -65,10 +65,11 @@ public class AddFriendActivity extends AppCompatActivity {
         ArrayList<String> lists = JsonHandler.messageReceived();
 
         String status = lists.get(0);
-        String id = lists.get(1);
-        String name = lists.get(2);
 
         if ("r200".equals(status)) {
+            String id = lists.get(1);
+            String name = lists.get(2);
+
             inflateLayout.removeView(listLayout);
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             listLayout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);

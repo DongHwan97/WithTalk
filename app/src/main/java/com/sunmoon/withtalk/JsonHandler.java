@@ -68,38 +68,29 @@ public class JsonHandler {
                         lists.add(json.getString("name"));
                         lists.add(json.getString("phoneNo"));
                         break;
-                    case "searchRegistFriend":
-                        lists = new ArrayList<>();
-                        lists.add(json.getString("status"));
-
-                        jsonArray = json.getJSONArray("registFriendList");
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject obj = jsonArray.getJSONObject(i);
-                            lists.add(obj.getString("id"));
-                            lists.add(obj.getString("name"));
-                        }
-                        break;
                     case "selectAllChatRoom":
                         lists = new ArrayList<>();
                         lists.add(json.getString("status"));
                         jsonArray = json.getJSONArray("chatRoomList");
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject obj = jsonArray.getJSONObject(i);
-                            lists.add(obj.getString("chatRoomNo"));
-                            JSONArray memberIdList = obj.getJSONArray("memberIdList");
-                            StringBuilder memberList_str = new StringBuilder();
-                            int j;
-                            for (j=0; j<memberIdList.length();j++){
-                                if(!MainActivity.id.equals(memberIdList.getString(j))){
-                                    memberList_str.append(FriendList.FRIEND_LIST.get(memberIdList.getString(j)));
-                                    if (j < memberIdList.length()-1) {
-                                        memberList_str.append(", ");
+                        if (jsonArray.length() != 0) {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject obj = jsonArray.getJSONObject(i);
+                                lists.add(obj.getString("chatRoomNo"));
+                                JSONArray memberIdList = obj.getJSONArray("memberIdList");
+                                StringBuilder memberList_str = new StringBuilder();
+                                int j;
+                                for (j = 0; j < memberIdList.length(); j++) {
+                                    if (!MainActivity.id.equals(memberIdList.getString(j))) {
+                                        memberList_str.append(FriendList.FRIEND_LIST.get(memberIdList.getString(j)));
+                                        if (j < memberIdList.length() - 1) {
+                                            memberList_str.append(", ");
+                                        }
                                     }
+                                    Log.e("messageReceived: ", memberList_str.toString());
                                 }
-                                Log.e("messageReceived: ", memberList_str.toString());
+                                lists.add(memberList_str.toString());
+                                lists.add(Integer.toString(j));
                             }
-                            lists.add(memberList_str.toString());
-                            lists.add(Integer.toString(j));
                         }
 
                         break;

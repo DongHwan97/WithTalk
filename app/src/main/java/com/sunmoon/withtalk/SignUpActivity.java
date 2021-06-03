@@ -12,6 +12,7 @@ import android.widget.EditText;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -79,6 +80,21 @@ public class SignUpActivity extends AppCompatActivity {
         String status = lists.get(0);
         Log.d("----------", status);
         if ("r200".equals(status)) {
+            DataAdapter mDbHelper = new DataAdapter(this);
+            mDbHelper.createDatabase();
+            mDbHelper.open();
+
+            mDbHelper.deleteAllFriend();
+
+            List list = new ArrayList<Friend>();
+            list = mDbHelper.selectAllFriend();
+            Friend friend = null;
+            for (int i = 0; i < list.size(); i++) {
+                friend = (Friend) list.get(i);
+                Log.d("-------", friend.id + ", " + friend.name);
+            }
+
+            mDbHelper.close();
             Util.startToast(this, "회원가입에 성공하셨습니다.");
             moveActivity(LoginActivity.class);
         } else {

@@ -52,7 +52,7 @@ public class DataAdapter {
     }
 
     public List selectAllFriend() {
-        String sql ="SELECT * FROM " + FRIEND_TABLE;
+        String sql = "SELECT * FROM " + FRIEND_TABLE + ";";
 
         List userList = new ArrayList<Friend>();
         Friend friend = null;
@@ -114,9 +114,20 @@ public class DataAdapter {
         //내부DB에서 친구 삭제
         String sql = "DELETE FROM " + FRIEND_TABLE + " WHERE ID = '" + id + "';";
 
+        Log.d("DELETE FRIEND", sql);
         try {
             mDb.execSQL(sql);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteAllFriend() {
+        String sql = "DELETE FROM " + FRIEND_TABLE + ";";
+
+        try {
+            mDb.execSQL(sql);
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -189,6 +200,16 @@ public class DataAdapter {
         try {
             mDb.execSQL(sql);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteAllChatroom() {
+        String sql = "DELETE FROM " + CHATROOM_TABLE + ";";
+
+        try {
+            mDb.execSQL(sql);
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }

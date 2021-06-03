@@ -44,7 +44,7 @@ public class FriendListFragment extends Fragment {
 
         moveSearchFriendButton = (ImageButton) rootView.findViewById(R.id.moveSearchFriendButton);
         moveAddFriendButton = (ImageButton) rootView.findViewById(R.id.moveAddFriendButton);
-        refreshButton = (ImageButton) rootView.findViewById(R.id.refreshButton);
+        refreshButton = (ImageButton) rootView.findViewById(R.id.friendListRefreshButton);
 
         selectAllFriend(inflater);
 
@@ -62,6 +62,7 @@ public class FriendListFragment extends Fragment {
         mDbHelper.close();
 
         if (fList.size() == 0) {
+            Log.d( "selectAllFriend: ", "바보1");
             sendSelectAllFriend();
             try {
                 Thread.sleep(1000);
@@ -69,8 +70,10 @@ public class FriendListFragment extends Fragment {
                 e.printStackTrace();
             }
             receiveSelectAllFriend(inflater);
+            Log.d( "selectAllFriend: ", "바보2");
         } else {
             for (int i = 0; i < fList.size(); i++) {
+                Log.d( "selectAllFriend: ", "바보3");
                 friend = (Friend) fList.get(i);
                 String friendId = friend.id;
                 String name = friend.name;
@@ -112,7 +115,7 @@ public class FriendListFragment extends Fragment {
         mDbHelper.open();
 
         Friend friend = null;
-        if ("r200".equals(status)) {
+        if ("r200".equals(status) && lists.get(1) != null && lists.get(2) != null) {
             for (int i = 1; i < lists.size(); i = i + 2) {
                 String friendId = lists.get(i);
                 String name = lists.get(i + 1);
@@ -132,6 +135,7 @@ public class FriendListFragment extends Fragment {
                         return true;
                     }
                 });
+
                 inflateLayout.addView(list_layout);
             }
         } else {
@@ -210,6 +214,7 @@ public class FriendListFragment extends Fragment {
         sb.append("\"friendId\":\"" + friendId + "\"");
         sb.append("}");
 
+        Log.d("++++++++", sb.toString());
         ConnectSocket.sendQueue.offer((sb.toString()));
     }
 
@@ -224,6 +229,7 @@ public class FriendListFragment extends Fragment {
             mDbHelper.open();
 
             mDbHelper.deleteFriend(friendId);
+            Log.d("FriendID!!", friendId);
 
             mDbHelper.close();
 
