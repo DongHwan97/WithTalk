@@ -1,33 +1,20 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.user;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.JsonReader;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.Util;
+import com.sunmoon.withtalk.common.ConnectSocket;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText loginIDText, loginPWText;
@@ -101,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void receiveFromServer() {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
 

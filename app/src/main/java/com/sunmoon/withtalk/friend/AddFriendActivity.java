@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.friend;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,8 +11,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.Friend;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.Util;
+
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class AddFriendActivity extends AppCompatActivity {
@@ -63,7 +68,7 @@ public class AddFriendActivity extends AppCompatActivity {
     }
 
     public void receiveFromSearchFriend() {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
         String id = lists.get(1);
@@ -110,7 +115,7 @@ public class AddFriendActivity extends AppCompatActivity {
     }
 
     public void receiveFromInsertFriend(String name, String friendId) {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
         String status = lists.get(0);
 
         if ("r200".equals(status)) {
@@ -118,14 +123,14 @@ public class AddFriendActivity extends AppCompatActivity {
             Friend friend = new Friend(friendId, name);
 
 
-            DataAdapter mDbHelper = new DataAdapter(getApplicationContext());
+          /*  DataAdapter mDbHelper = new DataAdapter(getApplicationContext());
             mDbHelper.createDatabase();
             mDbHelper.open();
 
             mDbHelper.insertFriend(friend);
 
             // db 닫기
-            mDbHelper.close();
+            mDbHelper.close();*/
             /*
             DataBaseHelper myDB = new DataBaseHelper(this);
             myDB.open();

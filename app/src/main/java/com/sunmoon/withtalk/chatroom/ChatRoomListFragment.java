@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.chatroom;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -17,10 +17,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.Util;
 
 import java.util.ArrayList;
 
@@ -78,7 +78,7 @@ public class ChatRoomListFragment extends Fragment {
     }
 
     public void receiveSelectAllChatRoom(LayoutInflater inflater) {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
 
@@ -185,7 +185,7 @@ public class ChatRoomListFragment extends Fragment {
     }
 
     public void receiveDeleteChatRoom() {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
 

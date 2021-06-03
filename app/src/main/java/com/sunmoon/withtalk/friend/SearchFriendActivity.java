@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.friend;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,12 +15,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sunmoon.withtalk.chatroom.ChatActivity;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.Util;
 
 import java.util.ArrayList;
 
@@ -75,7 +74,7 @@ public class SearchFriendActivity extends AppCompatActivity {
     }
 
     public void receiveSearchFriend() {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
 
@@ -143,7 +142,7 @@ public class SearchFriendActivity extends AppCompatActivity {
     }
 
     public void receiveDeleteFriend(String friendId) {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
         Log.d("++++++++++", status);

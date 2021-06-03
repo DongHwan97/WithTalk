@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.common;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;

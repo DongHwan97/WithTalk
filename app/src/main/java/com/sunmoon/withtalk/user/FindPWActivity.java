@@ -1,16 +1,16 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.user;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.Util;
+import com.sunmoon.withtalk.common.ConnectSocket;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class FindPWActivity extends AppCompatActivity {
     }
 
     public void receiveFromServer() {
-        List<String> lists = JsonHandler.messageReceived();
+        List<String> lists = ConnectSocket.JsonHandler.messageReceived();
         String status = lists.get(0);
 
         String id = findPWIDText.getText().toString();

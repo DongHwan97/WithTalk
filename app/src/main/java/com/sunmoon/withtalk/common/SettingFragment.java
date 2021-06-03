@@ -1,20 +1,19 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.common;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.user.LoginActivity;
+
 import java.util.List;
-import java.util.Locale;
 
 public class SettingFragment extends Fragment {
 
@@ -55,7 +54,7 @@ public class SettingFragment extends Fragment {
     }
 
     public void receiveFromServer() {
-        List<String> lists = JsonHandler.messageReceived();
+        List<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
         if ("r200".equals(status)) {

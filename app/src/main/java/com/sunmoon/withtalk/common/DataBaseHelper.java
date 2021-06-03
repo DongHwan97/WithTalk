@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.common;
 
 import android.content.ContentValues;
 import android.content.Context;

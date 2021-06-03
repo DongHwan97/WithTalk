@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.chatroom;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -20,12 +20,18 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.Util;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class groupChatRoomActivity extends AppCompatActivity {
+//전송 구현 스레드 구현
+public class ChatActivity extends AppCompatActivity {
 
     SpeechRecognizer speechRecognizer;
     Intent intent;
@@ -34,18 +40,18 @@ public class groupChatRoomActivity extends AppCompatActivity {
     EditText chatContentText;
     TextView chatRoomText;
     ScrollView scrollView;
+
     Context mContext;
 
+    int chatRoomNo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_chat_room);
+        setContentView(R.layout.activity_chat);
         Intent idIntent = getIntent();
         String friendName = idIntent.getStringExtra("friendName");;
         String friendId = idIntent.getStringExtra("friendId");
-        Intent idIntent2 = getIntent();
-        String friendList = idIntent2.getStringExtra("friendList");
-        FriendList.chatRoomId = idIntent2.getStringExtra("chatRoomId");
+
         Intent ttsIntent = getIntent();
         String ttsName = ttsIntent.getStringExtra("ttsName");
 
@@ -62,19 +68,14 @@ public class groupChatRoomActivity extends AppCompatActivity {
         chatContentText = findViewById(R.id.chatContentText);
         chatRoomText = findViewById(R.id.chatRoomText);
 
-        if(friendName==null&&ttsName==null){
-            chatRoomText.setText(friendList);
-        }else if(friendList==null&&ttsName==null){
-            chatRoomText.setText(friendName);
-        }else{
+        if(friendName==null){
             chatRoomText.setText(ttsName);
+        } else{
+            chatRoomText.setText(friendName);
         }
 
 
-
         createChatRoom(friendId);
-
-
 
         // 내부DB가져옴
 
@@ -116,6 +117,7 @@ public class groupChatRoomActivity extends AppCompatActivity {
 
                     TextView dateText = new TextView(mContext);
                     TextView contentText = new TextView(mContext);
+                    contentText.setTextSize(24);
 
                     if (ConnectSocket.receiveQueue.peek() != null) {
                         try {
@@ -161,93 +163,93 @@ public class groupChatRoomActivity extends AppCompatActivity {
         }).start();
 
 
-    }
-    RecognitionListener recognitionListener = new RecognitionListener() {
-        @Override
-        public void onReadyForSpeech(Bundle params) {
-
         }
+        RecognitionListener recognitionListener = new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {
 
-        @Override
-        public void onBeginningOfSpeech() {
-
-        }
-
-        @Override
-        public void onRmsChanged(float rmsdB) {
-
-        }
-
-        @Override
-        public void onBufferReceived(byte[] buffer) {
-
-        }
-
-        @Override
-        public void onEndOfSpeech() {
-
-        }
-
-        @Override
-        public void onError(int error) {
-            String message;
-
-            switch (error) {
-                case SpeechRecognizer.ERROR_AUDIO:
-                    message = "오디오 에러";
-                    break;
-                case SpeechRecognizer.ERROR_CLIENT:
-                    message = "클라이언트 에러";
-                    break;
-                case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                    message = "퍼미션 없음";
-                    break;
-                case SpeechRecognizer.ERROR_NETWORK:
-                    message = "네트워크 에러";
-                    break;
-                case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-                    message = "네트웍 타임아웃";
-                    break;
-                case SpeechRecognizer.ERROR_NO_MATCH:
-                    message = "찾을 수 없음";
-                    break;
-                case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
-                    message = "RECOGNIZER가 바쁨";
-                    break;
-                case SpeechRecognizer.ERROR_SERVER:
-                    message = "서버가 이상함";
-                    break;
-                case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    message = "말하는 시간초과";
-                    break;
-                default:
-                    message = "알 수 없는 오류임";
-                    break;
             }
-            Util.startToast(getApplicationContext(), "에러가 발생했습니다. : "+message);
-        }
 
-        @Override
-        public void onResults(Bundle results) {
-            ArrayList<String> result =
-                    results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            @Override
+            public void onBeginningOfSpeech() {
 
-            for(int i = 0; i < result.size() ; i++){
-                chatContentText.setText(result.get(i));
-                sendChat(chatContentText.getText().toString());
             }
-        }
 
-        @Override
-        public void onPartialResults(Bundle partialResults) {
+            @Override
+            public void onRmsChanged(float rmsdB) {
 
-        }
+            }
 
-        @Override
-        public void onEvent(int eventType, Bundle params) {
+            @Override
+            public void onBufferReceived(byte[] buffer) {
 
-        }
-    };
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int error) {
+                String message;
+
+                switch (error) {
+                    case SpeechRecognizer.ERROR_AUDIO:
+                        message = "오디오 에러";
+                        break;
+                    case SpeechRecognizer.ERROR_CLIENT:
+                        message = "클라이언트 에러";
+                        break;
+                    case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                        message = "퍼미션 없음";
+                        break;
+                    case SpeechRecognizer.ERROR_NETWORK:
+                        message = "네트워크 에러";
+                        break;
+                    case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                        message = "네트웍 타임아웃";
+                        break;
+                    case SpeechRecognizer.ERROR_NO_MATCH:
+                        message = "찾을 수 없음";
+                        break;
+                    case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                        message = "RECOGNIZER가 바쁨";
+                        break;
+                    case SpeechRecognizer.ERROR_SERVER:
+                        message = "서버가 이상함";
+                        break;
+                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                        message = "말하는 시간초과";
+                        break;
+                    default:
+                        message = "알 수 없는 오류임";
+                        break;
+                }
+                Util.startToast(getApplicationContext(), "에러가 발생했습니다. : "+message);
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                ArrayList<String> result =
+                        results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+                for(int i = 0; i < result.size() ; i++){
+                    chatContentText.setText(result.get(i));
+                    sendChat(chatContentText.getText().toString());
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+
+            }
+        };
 
     public void createChatRoom(String friendId){
         ArrayList<String> list = new ArrayList<>();
@@ -260,10 +262,11 @@ public class groupChatRoomActivity extends AppCompatActivity {
         sb.append("\"method\":\"" + "create" + "\",");
         sb.append("\"senderId\":\"" + MainActivity.id + "\",");
         sb.append("\"receiverId\":" + list + ",");
-        sb.append("\"chatRoomName\":\"" + null + "\"");
+        sb.append("\"chatRoomName\":" + null + ",");
+        sb.append("\"chatRoomType\":\"" + "DM" + "\"");
         sb.append("}");
         ConnectSocket.sendQueue.offer((sb.toString()));
-        Log.e("asd", "createChatRoom: "+sb.toString() );
+
         try {
             Thread.sleep(300);
         } catch (Exception e) {
@@ -277,7 +280,10 @@ public class groupChatRoomActivity extends AppCompatActivity {
             String method = json.getString("method");
             String status = json.getString("status");
             if ("create".equals(method)&&"r200".equals(status)) {
+                chatRoomNo = json.getInt("chatRoomNo");
+                Log.e("asd", "createChatRoom: "+chatRoomNo );
                 Util.startToast(this,"대화방생성");
+
             }else{
                 Util.startToast(this,"대화방생성 실패");
             }
@@ -292,7 +298,7 @@ public class groupChatRoomActivity extends AppCompatActivity {
         sb.append("\"type\":\"" + "chat" + "\",");
         sb.append("\"method\":\"" + "sendChat" + "\",");
         sb.append("\"senderId\":\"" + MainActivity.id + "\",");
-        sb.append("\"chatRoomNo\":" + FriendList.chatRoomId + ",");
+        sb.append("\"chatRoomNo\":" + chatRoomNo + ",");
         sb.append("\"contents\":\"" + message + "\"");
         sb.append("}");
         ConnectSocket.sendQueue.offer((sb.toString()));
