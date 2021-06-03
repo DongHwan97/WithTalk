@@ -1,15 +1,15 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.user;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.Util;
 
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class ResetPWActivity extends Activity {
     }
 
     public void receiveFromServer() {
-        List<String> lists = JsonHandler.messageReceived();
+        List<String> lists = ConnectSocket.JsonHandler.messageReceived();
         String status = lists.get(0);
         if ("r200".equals(status)) {
             Util.startToast(this, "비밀번호 재설정이 성공하였습니다.");

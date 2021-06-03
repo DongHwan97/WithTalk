@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.friend;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,6 +15,13 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.sunmoon.withtalk.common.MainActivity;
+import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.chatroom.ChatActivity;
+import com.sunmoon.withtalk.common.ConnectSocket;
+import com.sunmoon.withtalk.common.FriendList;
+import com.sunmoon.withtalk.common.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,7 +74,7 @@ public class FriendListFragment extends Fragment {
     }
 
     public void receiveSelectAllFriend(LayoutInflater inflater) {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
 
@@ -165,7 +172,7 @@ public class FriendListFragment extends Fragment {
     }
 
     public void receiveDeleteFriend(String friendId) {
-        ArrayList<String> lists = JsonHandler.messageReceived();
+        ArrayList<String> lists = ConnectSocket.JsonHandler.messageReceived();
 
         String status = lists.get(0);
 

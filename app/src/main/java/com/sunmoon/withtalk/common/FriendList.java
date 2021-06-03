@@ -1,4 +1,4 @@
-package com.sunmoon.withtalk;
+package com.sunmoon.withtalk.common;
 
 import java.util.HashMap;
 import java.util.Map;
