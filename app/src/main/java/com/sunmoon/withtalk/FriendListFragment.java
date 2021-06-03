@@ -21,10 +21,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.Inflater;
 
 
 public class FriendListFragment extends Fragment {
-
     ViewGroup rootView;
     TextView friendNameText;
     View list_layout;
@@ -45,14 +46,50 @@ public class FriendListFragment extends Fragment {
         moveAddFriendButton = (ImageButton) rootView.findViewById(R.id.moveAddFriendButton);
         refreshButton = (ImageButton) rootView.findViewById(R.id.refreshButton);
 
-        sendSelectAllFriend();
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        receiveSelectAllFriend(inflater);
+        selectAllFriend(inflater);
+
         return rootView;
+    }
+
+    public void selectAllFriend(LayoutInflater inflater) {
+        DataAdapter mDbHelper = new DataAdapter(getContext());
+        mDbHelper.createDatabase();
+        mDbHelper.open();
+
+        Friend friend = null;
+        List fList = mDbHelper.selectAllFriend();
+
+        mDbHelper.close();
+
+        if (fList.size() == 0) {
+            sendSelectAllFriend();
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            receiveSelectAllFriend(inflater);
+        } else {
+            for (int i = 0; i < fList.size(); i++) {
+                friend = (Friend) fList.get(i);
+                String friendId = friend.id;
+                String name = friend.name;
+
+                FriendList.FRIEND_LIST.put(friendId, name);
+                list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+                friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
+                friendNameText.setText(name);
+
+                list_layout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showDialog(friendId, name);
+                        return true;
+                    }
+                });
+                inflateLayout.addView(list_layout);
+            }
+        }
     }
 
     public void sendSelectAllFriend() {
@@ -68,16 +105,23 @@ public class FriendListFragment extends Fragment {
 
     public void receiveSelectAllFriend(LayoutInflater inflater) {
         ArrayList<String> lists = JsonHandler.messageReceived();
-
-
         String status = lists.get(0);
 
+        DataAdapter mDbHelper = new DataAdapter(getContext());
+        mDbHelper.createDatabase();
+        mDbHelper.open();
 
+        Friend friend = null;
         if ("r200".equals(status)) {
             for (int i = 1; i < lists.size(); i = i + 2) {
                 String friendId = lists.get(i);
                 String name = lists.get(i + 1);
-                FriendList.FRIEND_LIST.put(friendId,name);
+
+                friend = new Friend(friendId, name);
+                mDbHelper.insertFriend(friend);
+                mDbHelper.close();
+
+                FriendList.FRIEND_LIST.put(friendId, name);
                 list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
                 friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
                 friendNameText.setText(name);
@@ -90,6 +134,8 @@ public class FriendListFragment extends Fragment {
                 });
                 inflateLayout.addView(list_layout);
             }
+        } else {
+            Util.startToast(getContext(), "새로운 친구를 추가해주세요!");
         }
     }
 
@@ -143,6 +189,7 @@ public class FriendListFragment extends Fragment {
                 }
             }
         });
+
         friendBuilder.show();
     }
 
@@ -150,6 +197,7 @@ public class FriendListFragment extends Fragment {
         Intent intent = new Intent(getContext(), ChatActivity.class);
         intent.putExtra("friendName", friendName);
         intent.putExtra("friendId", friendId);
+
         startActivity(intent);
     }
 
@@ -161,15 +209,24 @@ public class FriendListFragment extends Fragment {
         sb.append("\"memberId\":\"" + MainActivity.id + "\",");
         sb.append("\"friendId\":\"" + friendId + "\"");
         sb.append("}");
+
         ConnectSocket.sendQueue.offer((sb.toString()));
     }
 
     public void receiveDeleteFriend(String friendId) {
         ArrayList<String> lists = JsonHandler.messageReceived();
-
         String status = lists.get(0);
 
         if ("r200".equals(status)) {
+            //내부 디비에서 삭제하기
+            DataAdapter mDbHelper = new DataAdapter(getContext());
+            mDbHelper.createDatabase();
+            mDbHelper.open();
+
+            mDbHelper.deleteFriend(friendId);
+
+            mDbHelper.close();
+
             Util.startToast(getContext(), friendId + "가 삭제되었습니다.");
             refresh();
         } else {
@@ -179,55 +236,37 @@ public class FriendListFragment extends Fragment {
 
     public void refresh() {
         inflateLayout.removeAllViews();
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"" + "friend" + "\",");
-        sb.append("\"method\":\"" + "selectAllFriend" + "\",");
-        sb.append("\"id\":\"" + MainActivity.id + "\"");
-        sb.append("}");
+        DataAdapter mDbHelper = new DataAdapter(getContext());
+        mDbHelper.createDatabase();
+        mDbHelper.open();
 
-        ConnectSocket.sendQueue.offer((sb.toString()));
-        try {
-            Thread.sleep(300);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String result = ConnectSocket.receiveQueue.poll();
+        Friend friend = null;
+        List fList = mDbHelper.selectAllFriend();
+        mDbHelper.close();
 
-        try {
-            JSONObject json = new JSONObject(result);
-            JSONArray jsonArray = json.getJSONArray("friendList");
-            String method = json.getString("method");
-            String status = json.getString("status");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject obj = jsonArray.getJSONObject(i);
-                String name = obj.getString("name");
-                String friendId = obj.getString("id");
+        for (int i = 0; i < fList.size(); i++) {
+            friend = (Friend) fList.get(i);
+            String friendId = friend.id;
+            String name = friend.name;
 
-                if ("selectAllFriend".equals(method) && "r200".equals(status)) {
-                    LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
-                    list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
-                    friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
-                    friendNameText.setText(name);
-                    list_layout.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            showDialog(name, friendId);
-                            return true;
-                        }
-                    });
-                    inflateLayout.addView(list_layout);
+            LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
+            list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+            friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
+            friendNameText.setText(name);
+            list_layout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    showDialog(name, friendId);
+                    return true;
                 }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            });
+
+            inflateLayout.addView(list_layout);
         }
     }
 
-    private void moveActivity(Class c) {//
-
+    private void moveActivity(Class c) {
         Intent intent = new Intent(getContext(), c);
         startActivity(intent);
     }
-
 }

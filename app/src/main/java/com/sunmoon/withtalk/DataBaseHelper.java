@@ -43,9 +43,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             this.getReadableDatabase();
             this.close();
             try {
-                //Copy the database from assests
                 copyDataBase();
-                Log.e(TAG, "createDatabase database created");
             } catch (IOException mIOException) {
                 throw new Error("ErrorCopyingDataBase");
             }
@@ -55,7 +53,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     ///data/data/your package/databases/Da Name <-이 경로에서 데이터베이스가 존재하는지 확인한다
     private boolean checkDataBase() {
         File dbFile = new File(DB_PATH + DB_NAME);
-        //Log.v("dbFile", dbFile + "   "+ dbFile.exists());
         return dbFile.exists();
     }
 

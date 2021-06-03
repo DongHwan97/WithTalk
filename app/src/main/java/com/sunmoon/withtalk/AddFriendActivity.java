@@ -16,7 +16,6 @@ import java.util.List;
 
 
 public class AddFriendActivity extends AppCompatActivity {
-
     ImageButton searchAddFriendButton;
     EditText searchAddFriendEdit;
     LinearLayout inflateLayout;
@@ -103,7 +102,7 @@ public class AddFriendActivity extends AppCompatActivity {
         builder.append("\"type\":\"" + "friend" + "\",");
         builder.append("\"method\":\"" + "insertFriend" + "\",");
         builder.append("\"memberId\":\"" + MainActivity.id + "\",");
-        builder.append("\"friendId\":\"" + friendId + "\",");
+        builder.append("\"friendId\":\"" + friendId + "\"");
         builder.append("}");
 
         ConnectSocket.sendQueue.offer((builder.toString()));
@@ -114,24 +113,14 @@ public class AddFriendActivity extends AppCompatActivity {
         String status = lists.get(0);
 
         if ("r200".equals(status)) {
-
-            Friend friend = new Friend(friendId, name);
-
-
             DataAdapter mDbHelper = new DataAdapter(getApplicationContext());
             mDbHelper.createDatabase();
             mDbHelper.open();
 
+            Friend friend = new Friend(friendId, name);
             mDbHelper.insertFriend(friend);
 
-            // db 닫기
             mDbHelper.close();
-            /*
-            DataBaseHelper myDB = new DataBaseHelper(this);
-            myDB.open();
-            myDB.create();
-            myDB.insertColumn(name, friendId);
-            */
             Util.startToast(getApplicationContext(), "친구추가 되었습니다.");
         } else {
             Util.startToast(getApplicationContext(), "친구추가 실패.");

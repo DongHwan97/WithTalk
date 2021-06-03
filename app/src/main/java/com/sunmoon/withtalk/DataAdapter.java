@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,8 @@ public class DataAdapter {
     protected static final String TAG = "DataAdapter";
 
     // TODO : TABLE 이름을 명시해야함
-    protected static final String TABLE_NAME = "friend";
+    protected static final String FRIEND_TABLE = "friend";
+    protected static final String CHATROOM_TABLE = "chatroom";
 
     private final Context mContext;
     private SQLiteDatabase mDb;
@@ -49,52 +51,158 @@ public class DataAdapter {
         mDbHelper.close();
     }
 
-    public List getTableData() {
-        // Table 이름 -> antpool_bitcoin 불러오기
-        String sql ="SELECT * FROM " + TABLE_NAME;
+    public List selectAllFriend() {
+        String sql ="SELECT * FROM " + FRIEND_TABLE;
 
-        // 모델 넣을 리스트 생성
         List userList = new ArrayList<Friend>();
-
-        // TODO : 모델 선언
         Friend friend = null;
 
         Cursor mCur = mDb.rawQuery(sql, null);
-        if (mCur!=null) {
+        if (mCur != null) {
             // 칼럼의 마지막까지
             while( mCur.moveToNext()) {
-                // TODO : 커스텀 모델 생성
                 friend = new Friend();
 
                 // TODO : Record 기술
-                // id, name, account, privateKey, secretKey, Comment
-                friend.name =mCur.getString(0);
-                friend.id = mCur.getString(1);
+                friend.id = mCur.getString(0);
+                friend.name =mCur.getString(1);
 
                 // 리스트에 넣기
                 userList.add(friend);
             }
+        }
 
+        return userList;
+    }
+
+    public List searchRegistFriend(String name) {
+        //내부DB에서 이름으로 친구 검색
+        String sql = "SELECT * FROM " + FRIEND_TABLE + " WHERE NAME = '" + name + "';";
+
+        List userList = new ArrayList<Friend>();
+        Friend friend = null;
+
+        Cursor mCur = mDb.rawQuery(sql, null);
+        if (mCur != null) {
+            while(mCur.moveToNext()) {
+                friend = new Friend();
+
+                friend.id = mCur.getString(0);
+                friend.name = mCur.getString(1);
+
+                userList.add(friend);
+            }
         }
 
         return userList;
     }
 
     public void insertFriend(Friend friend) {
-        String name = friend.name;
         String id = friend.id;
+        String name = friend.name;
 
-        String sql = "INSERT INTO Friend VALUES ('" + name + "','" + id + "');";
+        String sql = "INSERT INTO " + FRIEND_TABLE + " VALUES ('" + id + "','" + name + "');";
 
         try {
             mDb.execSQL(sql);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        List<Friend> flist = getTableData();
-        for ( Friend f : flist ) {
-            Log.d("내부디비친구목록", "아이디 : " + f.id + " 이름 : " + f.name);
+    public void deleteFriend(String id) {
+        //내부DB에서 친구 삭제
+        String sql = "DELETE FROM " + FRIEND_TABLE + " WHERE ID = '" + id + "';";
+
+        try {
+            mDb.execSQL(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    public List selectAllChatroom() {
+        String sql ="SELECT * FROM " + CHATROOM_TABLE;
+
+        List<Chatroom> chatroomList = new ArrayList<Chatroom>();
+        Chatroom chatroom = null;
+
+        Cursor mCur = mDb.rawQuery(sql, null);
+        if (mCur != null) {
+            while (mCur.moveToNext()) {
+                chatroom = new Chatroom();
+
+                chatroom.no = mCur.getInt(0);
+                chatroom.name = mCur.getString(1);
+                chatroom.memberCount = mCur.getInt(2);
+                chatroom.type = mCur.getString(3);
+
+                chatroomList.add(chatroom);
+            }
+        }
+
+        return chatroomList;
+    }
+
+    public List searchRegistChatroom(String name) {
+        //내부DB에서 이름으로 대화방 검색
+        String sql = "SELECT * FROM " + CHATROOM_TABLE + " WHERE NAME = '" + name + "';";
+
+        List chatroomList = new ArrayList<Chatroom>();
+        Chatroom chatroom = null;
+
+        Cursor mCur = mDb.rawQuery(sql, null);
+        if (mCur != null) {
+            while(mCur.moveToNext()) {
+                chatroom = new Chatroom();
+
+                chatroom.no = mCur.getInt(0);
+                chatroom.name = mCur.getString(1);
+                chatroom.memberCount = mCur.getInt(2);
+                chatroom.type = mCur.getString(3);
+
+                chatroomList.add(chatroom);
+            }
+        }
+
+        return chatroomList;
+    }
+
+    public void insertChatroom(Chatroom chatroom) {
+        int no = chatroom.no;
+        String name = chatroom.name;
+        int memberCount = chatroom.memberCount;
+        String type = chatroom.type;
+
+        String sql = "INSERT INTO " + CHATROOM_TABLE + " VALUES ('" + no + "','" + name + "','" + memberCount + "','" + type + "');";
+
+        try {
+            mDb.execSQL(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteChatroom(int no) {
+        String sql = "DELETE FROM " + CHATROOM_TABLE + " WHERE NO = " + no + ";";
+
+        try {
+            mDb.execSQL(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean checkExistChatroom(int no) {
+        String sql = "SELECT COUNT(*) FROM " + CHATROOM_TABLE + " WHERE NO = " + no + ";";
+
+        Boolean isExist = null;
+
+
+        return isExist;
+    }
+
+    public void updateNameChatroom(int no, String name) {
+
     }
 }

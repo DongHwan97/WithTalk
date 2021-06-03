@@ -67,17 +67,6 @@ public class JsonHandler {
                         lists.add(json.getString("name"));
                         lists.add(json.getString("phoneNo"));
                         break;
-                    case "searchRegistFriend":
-                        lists = new ArrayList<>();
-                        lists.add(json.getString("status"));
-
-                        jsonArray = json.getJSONArray("registFriendList");
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject obj = jsonArray.getJSONObject(i);
-                            lists.add(obj.getString("id"));
-                            lists.add(obj.getString("name"));
-                        }
-                        break;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

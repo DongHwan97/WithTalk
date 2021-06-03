@@ -23,9 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchFriendActivity extends AppCompatActivity {
-
     ImageButton searchFriendButton;
     EditText searchFriendEdit;
     LinearLayout inflateLayout;
@@ -48,13 +48,7 @@ public class SearchFriendActivity extends AppCompatActivity {
                 inflateLayout.removeAllViews();
                 String friendName = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
                 if ((friendName.length() > 0)) {
-                    sendSearchFriend(senderId, friendName);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    receiveSearchFriend();
+                    searchRegistFriend(friendName);
                 } else {
                     Util.startToast(getApplicationContext(), "이름을 입력해 주세요");
                 }
@@ -62,27 +56,21 @@ public class SearchFriendActivity extends AppCompatActivity {
         });
     }
 
-    public void sendSearchFriend(String senderId, String friendName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"" + "friend" + "\",");
-        sb.append("\"method\":\"" + "searchRegistFriend" + "\",");
-        sb.append("\"senderId\":\"" + senderId + "\",");
-        sb.append("\"searchName\":\"" + friendName + "\"");
-        sb.append("}");
+    public void searchRegistFriend(String friendName) {
+        DataAdapter mDbHelper = new DataAdapter(getApplicationContext());
+        mDbHelper.createDatabase();
+        mDbHelper.open();
 
-        ConnectSocket.sendQueue.offer((sb.toString()));
-    }
+        List fList = mDbHelper.searchRegistFriend(friendName);
+        mDbHelper.close();
 
-    public void receiveSearchFriend() {
-        ArrayList<String> lists = JsonHandler.messageReceived();
-
-        String status = lists.get(0);
-
-        if ("r200".equals(status)) {
-            for (int i = 1; i < lists.size(); i = i + 2) {
-                String friendId = lists.get(i);
-                String name = lists.get(i + 1);
+        Friend friend = null;
+        if (fList.size() != 0) {
+            for(int i = 0; i < fList.size(); i++) {
+                //검색 결과가 있을 경우 (여러명일수도있음 - for문)
+                friend = (Friend)fList.get(i);
+                String friendId = friend.id;
+                String name = friend.name;
 
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 listLayout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
@@ -144,10 +132,17 @@ public class SearchFriendActivity extends AppCompatActivity {
 
     public void receiveDeleteFriend(String friendId) {
         ArrayList<String> lists = JsonHandler.messageReceived();
-
         String status = lists.get(0);
-        Log.d("++++++++++", status);
+
         if ("r200".equals(status)) {
+            //내부 디비에서 삭제하기
+            DataAdapter mDbHelper = new DataAdapter(this);
+            mDbHelper.createDatabase();
+            mDbHelper.open();
+
+            mDbHelper.deleteFriend(friendId);
+            mDbHelper.close();
+
             Util.startToast(this, friendId + "가 삭제되었습니다.");
         } else {
             Util.startToast(this, "실패했습니다.");
