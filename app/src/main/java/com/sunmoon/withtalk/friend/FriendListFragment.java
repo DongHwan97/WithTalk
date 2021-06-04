@@ -54,53 +54,16 @@ public class FriendListFragment extends Fragment {
         moveAddFriendButton = (ImageButton) rootView.findViewById(R.id.moveAddFriendButton);
         refreshButton = (ImageButton) rootView.findViewById(R.id.friendListRefreshButton);
 
-        selectAllFriend(inflater);
+        sendSelectAllFriend();
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        receiveSelectAllFriend(inflater);
+
 
         return rootView;
-    }
-
-    public void selectAllFriend(LayoutInflater inflater) {
-        DataAdapter mDbHelper = new DataAdapter(getContext());
-        mDbHelper.createDatabase();
-        mDbHelper.open();
-
-        Friend friend = null;
-        List fList = mDbHelper.selectAllFriend();
-
-        mDbHelper.close();
-
-        /*if (fList.size() == 0) {*/
-            Log.d( "selectAllFriend: ", "바보1");
-            sendSelectAllFriend();
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            receiveSelectAllFriend(inflater);
-            Log.d( "selectAllFriend: ", "바보2");
-       /* } else {
-            for (int i = 0; i < fList.size(); i++) {
-                Log.d( "selectAllFriend: ", "바보3");
-                friend = (Friend) fList.get(i);
-                String friendId = friend.id;
-                String name = friend.name;
-
-                FriendList.FRIEND_LIST.put(friendId, name);
-                list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
-                friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
-                friendNameText.setText(name);
-
-                list_layout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        showDialog(friendId, name);
-                        return true;
-                    }
-                });
-                inflateLayout.addView(list_layout);
-            }
-        }*/
     }
 
     public void sendSelectAllFriend() {
@@ -118,20 +81,10 @@ public class FriendListFragment extends Fragment {
         ArrayList<String> lists = JsonHandler.messageReceived();
         String status = lists.get(0);
 
-        DataAdapter mDbHelper = new DataAdapter(getContext().getApplicationContext());
-        mDbHelper.createDatabase();
-        mDbHelper.open();
-
-        Friend friend = null;
-
         if ("r200".equals(status) && lists.size() != 1) {
             for (int i = 1; i < lists.size(); i = i + 2) {
                 String friendId = lists.get(i);
                 String name = lists.get(i + 1);
-
-                friend = new Friend(friendId, name);
-                mDbHelper.insertFriend(friend);
-                mDbHelper.close();
 
                 FriendList.FRIEND_LIST.put(friendId, name);
                 list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
@@ -179,14 +132,12 @@ public class FriendListFragment extends Fragment {
     }
 
     public void showDialog(String friendId, String friendName) {
-        Log.d("Friend1", friendId);
         final CharSequence[] items = {"1:1 대화", "친구 삭제"};
-        AlertDialog.Builder friendBuilder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder friendBuilder = new AlertDialog.Builder(getContext());
         friendBuilder.setTitle("친구 관리");
         friendBuilder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.e("onClick: ", Integer.toString(which) + "입니다");
                 switch (which) {
                     case 0:
                         moveChatRoom(friendName, friendId);
@@ -195,7 +146,7 @@ public class FriendListFragment extends Fragment {
                         sendDeleteFriend(friendId);
 
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(300);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -240,7 +191,7 @@ public class FriendListFragment extends Fragment {
         ConnectSocket.sendQueue.offer((sb.toString()));
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(300);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -275,25 +226,14 @@ public class FriendListFragment extends Fragment {
         sb.append("}");
         Log.d("Friend2", friendId);
 
-        Log.d("++++++++", sb.toString());
         ConnectSocket.sendQueue.offer((sb.toString()));
     }
 
     public void receiveDeleteFriend(String friendId) {
         ArrayList<String> lists = JsonHandler.messageReceived();
         String status = lists.get(0);
-        Log.d("Friend3", friendId);
 
         if ("r200".equals(status)) {
-            //내부 디비에서 삭제하기
-            DataAdapter mDbHelper = new DataAdapter(getContext().getApplicationContext());
-            mDbHelper.createDatabase();
-            mDbHelper.open();
-
-            mDbHelper.deleteFriend(friendId);
-            Log.d("FriendID!!", friendId);
-
-            mDbHelper.close();
 
             Util.startToast(getContext(), friendId + "가 삭제되었습니다.");
             Log.d("Friend4", friendId);
@@ -305,35 +245,43 @@ public class FriendListFragment extends Fragment {
 
     public void refresh() {
         inflateLayout.removeAllViews();
-        DataAdapter mDbHelper = new DataAdapter(getContext());
-        mDbHelper.createDatabase();
-        mDbHelper.open();
 
-        Friend friend = null;
-        List fList = mDbHelper.selectAllFriend();
-        mDbHelper.close();
-
-        for (int i = 0; i < fList.size(); i++) {
-            friend = (Friend) fList.get(i);
-            String friendId = friend.id;
-            String name = friend.name;
-
-            Log.d("FriendID22", friendId + " , " + name);
-
-            LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
-            list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
-            friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
-            friendNameText.setText(name);
-            list_layout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    showDialog(friendId, name);
-                    return true;
-                }
-            });
-
-            inflateLayout.addView(list_layout);
+        sendSelectAllFriend();
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        ArrayList<String> lists = JsonHandler.messageReceived();
+        String status = lists.get(0);
+
+        if ("r200".equals(status) && lists.size() != 1) {
+            for (int i = 1; i < lists.size(); i = i + 2) {
+                String friendId = lists.get(i);
+                String name = lists.get(i + 1);
+
+                LayoutInflater inflater = (LayoutInflater) getLayoutInflater();
+                list_layout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+                friendNameText = (TextView) list_layout.findViewById(R.id.friendNameText);
+                friendNameText.setText(name);
+                list_layout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showDialog(friendId, name);
+                        return true;
+                    }
+                });
+                inflateLayout.addView(list_layout);
+            }
+        } else {
+            Util.startToast(getContext(), "새로운 친구를 등록해주세요!");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
     }
 
     private void moveActivity(Class c) {

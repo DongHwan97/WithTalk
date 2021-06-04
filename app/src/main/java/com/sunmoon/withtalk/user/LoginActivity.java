@@ -1,5 +1,6 @@
 package com.sunmoon.withtalk.user;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.FileObserver;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.sunmoon.withtalk.common.JsonHandler;
 import com.sunmoon.withtalk.common.MainActivity;
 import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.NotificationService;
 import com.sunmoon.withtalk.common.Util;
 import com.sunmoon.withtalk.common.ConnectSocket;
 
@@ -43,7 +45,12 @@ public class LoginActivity extends AppCompatActivity {
         loginPWText = (EditText) findViewById(R.id.loginPWText);
         loginAutoCheck = (CheckBox) findViewById(R.id.loginAutoCheck);
 
-        socket = new ConnectSocket();//소켓 연결
+        //socket = new ConnectSocket();//소켓 연결
+
+
+        Intent intent = new Intent(LoginActivity.this, NotificationService.class);
+        startService(intent);
+
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -52,19 +59,13 @@ public class LoginActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.loginButton:
 
-                    /*
-                    File f = new File(getDataDir().getAbsolutePath() + "/databases/chat2.db");
-                    f.delete();
-                    Log.d("파일패스", f.getAbsolutePath());
-                    */
-
                     String id = loginIDText.getText().toString();
                     String pw = loginPWText.getText().toString();
 
                     if (id.length() > 6 && pw.length() > 7) {
                         sendToServer(id, pw);
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(300);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

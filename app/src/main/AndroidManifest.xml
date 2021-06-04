@@ -15,7 +15,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WithTalk">
-        <activity android:name=".chatroom.groupChatRoomActivity"></activity>
+        <service
+            android:name=".common.NotificationService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity android:name=".chatroom.InviteFriendActivity" />
+        <activity android:name=".chatroom.groupChatRoomActivity" />
         <activity
             android:name=".user.LoginActivity"
             android:screenOrientation="portrait">

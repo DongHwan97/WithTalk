@@ -84,18 +84,7 @@ public class SignUpActivity extends AppCompatActivity {
         String status = lists.get(0);
 
         if ("r200".equals(status)) {
-            DataAdapter mDbHelper = new DataAdapter(this);
-            mDbHelper.createDatabase();
-            mDbHelper.open();
-            mDbHelper.deleteAllFriend();
 
-            List list = new ArrayList<Friend>();
-            list = mDbHelper.selectAllFriend();
-            Friend friend = null;
-            for (int i = 0; i < list.size(); i++) {
-                friend = (Friend) list.get(i);
-            }
-            mDbHelper.close();
             Util.startToast(this, "회원가입에 성공했습니다.");
             moveActivity(LoginActivity.class);//로그인 화면으로 이동
         } else {

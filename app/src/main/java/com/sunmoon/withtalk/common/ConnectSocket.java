@@ -1,6 +1,8 @@
 package com.sunmoon.withtalk.common;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class ConnectSocket extends Activity {
+public class ConnectSocket extends Thread {
     public static final String SERVER_IP = "192.168.25.55";
     public static final int SERVER_PORT = 5050;
     public static final int READ_BUFFER = 10000;
@@ -30,9 +32,54 @@ public class ConnectSocket extends Activity {
     public static Queue<String> sendQueue = new LinkedList<>();
     public static Queue<String> toChatQueue = new LinkedList<>();
 
+    Handler handler;
+    boolean isRun = true;
+
+    public ConnectSocket(Handler handler) {
+        try {
+            this.handler = handler;
+            socketChannel = SocketChannel.open();
+            socketChannel.configureBlocking(true);
+            socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
+        } catch (Exception e) {
+            return;
+        }
+
+    }
 
     public ConnectSocket() {
-        this.startClient();
+        startClient();
+
+    }
+
+    public void stopForever(){
+        synchronized (this) {
+            this.isRun = false;
+        }
+    }
+
+    @Override
+    public void run(){
+        try {
+            socketChannel = SocketChannel.open();
+            socketChannel.configureBlocking(true);
+            socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
+        } catch (Exception e) {
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                send();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                receive();
+            }
+        }).start();
     }
 
     void startClient() {
@@ -77,11 +124,20 @@ public class ConnectSocket extends Activity {
                 String contents, sendTime, chatRoomNo, senderId, isRead="false";
                 if (received_msg.contains("sendChat")){
 
+
                     json = new JSONObject(received_msg);
                     contents = json.getString("contents");
                     sendTime = json.getString("sendTime");
                     chatRoomNo = json.getString("chatRoomNo");
                     senderId = json.getString("senderId");
+
+                    Message message = handler.obtainMessage() ;
+
+                    // fill the message object.
+                    message.obj = json;
+
+                    // send message object.
+                    this.handler.sendMessage(message) ;
 
                     if(chatRoomNo.equals(FriendList.chatRoomNo)){
                         isRead="true";
@@ -89,6 +145,7 @@ public class ConnectSocket extends Activity {
                         toChatQueue.offer(received_msg);
                     }
                     // 2. 내부 DB에 넣기
+
 
 
 

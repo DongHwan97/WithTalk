@@ -62,7 +62,7 @@ public class groupChatRoomActivity extends AppCompatActivity {
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getApplicationContext().getPackageName());
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-        scrollView = findViewById(R.id.scrollView);
+        scrollView = findViewById(R.id.sttView);
         chatLayout = findViewById(R.id.chatLayout);
         chatSendButton = findViewById(R.id.chatSendButton);
         chatContentText = findViewById(R.id.chatContentText);

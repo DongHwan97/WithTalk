@@ -24,6 +24,7 @@ import com.sunmoon.withtalk.common.JsonHandler;
 import com.sunmoon.withtalk.common.DataAdapter;
 
 public class AddFriendActivity extends AppCompatActivity {
+
     ImageButton searchAddFriendButton;
     EditText searchAddFriendEdit;
     LinearLayout inflateLayout;

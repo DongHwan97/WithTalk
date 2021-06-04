@@ -38,7 +38,7 @@ public class ChatRoomListFragment extends Fragment {
     TextView listNameText, listDateText, countText;
     View list_layout;
     LinearLayout inflateLayout;
-    ImageButton moveSearchChatRoom, refreshButton;
+    ImageButton moveSearchChatRoom, moveInviteChatRoom, refreshButton;
 
     LayoutInflater mLayoutInflater;
 
@@ -55,7 +55,7 @@ public class ChatRoomListFragment extends Fragment {
 
         moveSearchChatRoom = (ImageButton)rootView.findViewById(R.id.moveSearchChatRoom);
         refreshButton = (ImageButton) rootView.findViewById(R.id.chatRoomListRefreshButton);
-
+        moveInviteChatRoom = (ImageButton) rootView.findViewById(R.id.moveInviteChatRoom);
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +107,12 @@ public class ChatRoomListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 moveActivity(SearchChatRoomActivity.class);
+            }
+        });
+        moveInviteChatRoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveActivity(InviteFriendActivity.class);
             }
         });
 
@@ -233,8 +239,6 @@ public class ChatRoomListFragment extends Fragment {
             });
             inflateLayout.addView(list_layout);
         }
-
-
     }
 
 

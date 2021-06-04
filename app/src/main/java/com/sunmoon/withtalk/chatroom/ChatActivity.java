@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,7 +28,6 @@ import android.widget.TextView;
 
 import com.sunmoon.withtalk.common.ConnectSocket;
 import com.sunmoon.withtalk.common.FriendList;
-import com.sunmoon.withtalk.common.JsonHandler;
 import com.sunmoon.withtalk.common.MainActivity;
 import com.sunmoon.withtalk.R;
 import com.sunmoon.withtalk.common.Util;
@@ -35,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -49,13 +51,7 @@ public class ChatActivity extends AppCompatActivity {
 
     Context mContext;
 
-
-    NotificationManager notificationManager;
-    NotificationCompat.Builder builder;
-
-    private static String CHANNEL_ID = "channel1";
-    private static String CHANEL_NAME = "Channel1";
-
+    public TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,25 +63,37 @@ public class ChatActivity extends AppCompatActivity {
 
         mContext = this;
 
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status== TextToSpeech.SUCCESS){
+                    tts.setLanguage(Locale.KOREAN);
+                }else{
+                    Log.e("TTS", "TTS생성 실패");
+                }
+            }
+        });
+
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO}, 1);
 
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getApplicationContext().getPackageName());
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-        scrollView = findViewById(R.id.scrollView);
+        scrollView = findViewById(R.id.chatScrollView);
         chatLayout = findViewById(R.id.chatLayout);
         chatSendButton = findViewById(R.id.chatSendButton);
         chatContentText = findViewById(R.id.chatContentText);
         chatRoomText = findViewById(R.id.chatRoomText);
         chatRoomText.setText(friendName == null ? "(이름 없음)": friendName);
 
-        findViewById(R.id.STTLayout).setOnTouchListener(new View.OnTouchListener() {
+        chatLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     speechRecognizer = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
                     speechRecognizer.setRecognitionListener(recognitionListener);
                     speechRecognizer.startListening(intent);
+                    Log.d( "onTouch: ","터치댐");
                 }
                 return true;
             }
@@ -230,6 +238,7 @@ public class ChatActivity extends AppCompatActivity {
                         final String sendTime = json.getString("sendTime");
                         final String senderId = json.getString("senderId");
 
+                        //tts.speak(contents + " "+sendTime, TextToSpeech.QUEUE_FLUSH, null); 화면에 들어와있을때만 읽어주자
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -258,23 +267,6 @@ public class ChatActivity extends AppCompatActivity {
         }
     });
 
-    public void showNotification(){//푸시알림
-        builder = null;
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(
-                    new NotificationChannel(CHANNEL_ID, CHANEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
-            );
-            builder = new NotificationCompat.Builder(this,CHANNEL_ID);
-        }
-
-        builder.setContentTitle("WithTalk");
-        builder.setContentText("알림 메시지");
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        Notification notification = builder.build();
-
-        notificationManager.notify(1,notification);
-    }
 
     @Override
     public void onBackPressed() {
@@ -284,5 +276,12 @@ public class ChatActivity extends AppCompatActivity {
         }
         FriendList.chatRoomNo ="none";
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(tts!=null){
+            tts.stop();
+            tts.shutdown();
+        }
+    }
 }
