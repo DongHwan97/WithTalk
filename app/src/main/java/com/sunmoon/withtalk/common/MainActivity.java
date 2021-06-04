@@ -91,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
             tts.shutdown();
         }
     }
+
     private long time= 0;
+
     @Override
     public void onBackPressed() {
         if(System.currentTimeMillis() - time >= 2000){

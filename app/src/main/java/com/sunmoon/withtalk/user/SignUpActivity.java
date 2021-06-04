@@ -13,6 +13,7 @@ import com.sunmoon.withtalk.common.DataAdapter;
 import com.sunmoon.withtalk.R;
 import com.sunmoon.withtalk.common.ConnectSocket;
 import com.sunmoon.withtalk.common.Friend;
+import com.sunmoon.withtalk.common.JsonHandler;
 import com.sunmoon.withtalk.common.Util;
 import com.sunmoon.withtalk.user.LoginActivity;
 
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignUpActivity extends AppCompatActivity {
+
     EditText signUpIDText, signUpNameText, signUpPhoneText, signUpPWText, signUpConfirmPW;
     Button signUpButton;
 
@@ -34,6 +36,7 @@ public class SignUpActivity extends AppCompatActivity {
         signUpPWText = findViewById(R.id.signUpPWText);
         signUpConfirmPW = findViewById(R.id.signUpConfirmPW);
         signUpButton = findViewById(R.id.signUpButton);
+
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,17 +46,17 @@ public class SignUpActivity extends AppCompatActivity {
                 String pw = signUpPWText.getText().toString();
                 String confirmPw = signUpConfirmPW.getText().toString();
 
-                if ((id.length() > 7) && (name.length() > 1) && (phone.length() > 10) && (pw.length() > 7) && (confirmPw.length() > 7)) {
+                if ((id.length() > 6) && (name.length() > 1) && (phone.length() > 10) && (pw.length() > 7) && (confirmPw.length() > 7)) {//제약조건
                     if (!pw.equals(confirmPw)) {
                         Util.startToast(getApplicationContext(), "비밀번호가 일치하지 않습니다.");
                     } else {
-                        sendToServer(id, name, phone, pw);
+                        sendToServer(id, name, phone, pw);//성공 시 서버로 전송
                         try {
                             Thread.sleep(1000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        receiveFromServer();
+                        receiveFromServer();//회원가입 정보 받기
                     }
                 } else {
                     Util.startToast(getApplicationContext(), "입력하지 않은 정보가 있거나 아이디 및 비밀번호가 8자리 이상이 아닙니다.");
@@ -62,8 +65,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void sendToServer(String id, String name, String phone, String pw) {
-        //회원 정보 보내기
+    public void sendToServer(String id, String name, String phone, String pw) {//회원 정보 보내기
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"type\":\"member\",");
@@ -74,20 +76,17 @@ public class SignUpActivity extends AppCompatActivity {
         sb.append("\"phoneNo\":\"" + phone + "\"");
         sb.append("}");
 
-        Log.d("----------------", sb.toString());
         ConnectSocket.sendQueue.offer(sb.toString());
     }
 
-    public void receiveFromServer() {
-        List<String> lists = ConnectSocket.JsonHandler.messageReceived();
-
+    public void receiveFromServer() {//회원가입 정보 받기
+        List<String> lists = JsonHandler.messageReceived();
         String status = lists.get(0);
-        Log.d("----------", status);
+
         if ("r200".equals(status)) {
             DataAdapter mDbHelper = new DataAdapter(this);
             mDbHelper.createDatabase();
             mDbHelper.open();
-
             mDbHelper.deleteAllFriend();
 
             List list = new ArrayList<Friend>();
@@ -95,14 +94,12 @@ public class SignUpActivity extends AppCompatActivity {
             Friend friend = null;
             for (int i = 0; i < list.size(); i++) {
                 friend = (Friend) list.get(i);
-                Log.d("-------", friend.id + ", " + friend.name);
             }
-
             mDbHelper.close();
-            Util.startToast(this, "회원가입에 성공하셨습니다.");
-            moveActivity(LoginActivity.class);
+            Util.startToast(this, "회원가입에 성공했습니다.");
+            moveActivity(LoginActivity.class);//로그인 화면으로 이동
         } else {
-            Util.startToast(this, "회원가입에 실패하였습니다.");
+            Util.startToast(this, "회원가입에 실패했습니다.");
         }
     }
 

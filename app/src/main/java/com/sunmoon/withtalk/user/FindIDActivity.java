@@ -9,12 +9,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.JsonHandler;
 import com.sunmoon.withtalk.common.Util;
 import com.sunmoon.withtalk.common.ConnectSocket;
 
 import java.util.List;
 
 public class FindIDActivity extends AppCompatActivity {
+
     EditText findIDNameText, findIDPhoneText;
     Button findIDButton;
     TextView resultIDText;
@@ -49,8 +51,7 @@ public class FindIDActivity extends AppCompatActivity {
         });
     }
 
-    public void sendToServer(String name, String phone) {
-        //서버에 보내기
+    public void sendToServer(String name, String phone) {//정보 전송
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"type\":\"member\",");
@@ -62,9 +63,8 @@ public class FindIDActivity extends AppCompatActivity {
         ConnectSocket.sendQueue.offer(sb.toString());
     }
 
-    public void receiveFromServer() {
-        //결과 받기
-        List<String> lists = ConnectSocket.JsonHandler.messageReceived();
+    public void receiveFromServer() {//응답 받기
+        List<String> lists = JsonHandler.messageReceived();
 
         String status = lists.get(0);
         String id = lists.get(1);

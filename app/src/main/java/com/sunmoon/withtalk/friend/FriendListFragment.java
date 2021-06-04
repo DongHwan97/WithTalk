@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sunmoon.withtalk.common.ChatRoomList;
 import com.sunmoon.withtalk.common.JsonHandler;
 import com.sunmoon.withtalk.R;
 import com.sunmoon.withtalk.chatroom.ChatActivity;
@@ -25,6 +26,9 @@ import com.sunmoon.withtalk.common.FriendList;
 import com.sunmoon.withtalk.common.MainActivity;
 import com.sunmoon.withtalk.common.Util;
 import com.sunmoon.withtalk.common.DataAdapter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +69,7 @@ public class FriendListFragment extends Fragment {
 
         mDbHelper.close();
 
-        if (fList.size() == 0) {
+        /*if (fList.size() == 0) {*/
             Log.d( "selectAllFriend: ", "바보1");
             sendSelectAllFriend();
             try {
@@ -75,7 +79,7 @@ public class FriendListFragment extends Fragment {
             }
             receiveSelectAllFriend(inflater);
             Log.d( "selectAllFriend: ", "바보2");
-        } else {
+       /* } else {
             for (int i = 0; i < fList.size(); i++) {
                 Log.d( "selectAllFriend: ", "바보3");
                 friend = (Friend) fList.get(i);
@@ -96,7 +100,7 @@ public class FriendListFragment extends Fragment {
                 });
                 inflateLayout.addView(list_layout);
             }
-        }
+        }*/
     }
 
     public void sendSelectAllFriend() {
@@ -206,10 +210,59 @@ public class FriendListFragment extends Fragment {
 
     public void moveChatRoom(String friendName, String friendId) {
         Intent intent = new Intent(getContext(), ChatActivity.class);
+        if(ChatRoomList.CHATROOMLIST.get(friendId)==null){
+            createChatRoom(friendId);
+        }
+        if(ChatRoomList.CHATROOMLIST.get(friendId)==null){
+            return;
+        }
         intent.putExtra("friendName", friendName);
         intent.putExtra("friendId", friendId);
-
+        intent.putExtra("chatRoomNo", ChatRoomList.CHATROOMLIST.get(friendId));
+        Log.e( "moveChatRoom: ", "로그입니당"+ChatRoomList.CHATROOMLIST.get(friendId));
         startActivity(intent);
+    }
+
+    public void createChatRoom(String friendId){
+        ArrayList<String> list = new ArrayList<>();
+        list.add("\""+MainActivity.id+"\"");
+        list.add("\""+friendId+"\"");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"" + "chatRoom" + "\",");
+        sb.append("\"method\":\"" + "create" + "\",");
+        sb.append("\"senderId\":\"" + MainActivity.id + "\",");
+        sb.append("\"receiverId\":" + list + ",");
+        sb.append("\"chatRoomName\":" + null + ",");
+        sb.append("\"chatRoomType\":\"" + "DM" + "\"");
+        sb.append("}");
+        ConnectSocket.sendQueue.offer((sb.toString()));
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 결과 받기
+        String result = ConnectSocket.receiveQueue.poll();
+        Log.e("asd", "createChatRoom: "+result );
+        try {
+            JSONObject json = new JSONObject(result);
+            String method = json.getString("method");
+            String status = json.getString("status");
+            if ("create".equals(method)&&"r200".equals(status)) {
+                int chatRoomNo = json.getInt("chatRoomNo");
+                ChatRoomList.CHATROOMLIST.put(friendId,(""+chatRoomNo));
+                Log.e("asd", "createChatRoom: "+chatRoomNo );
+                Util.startToast(getContext(),"대화방생성");
+
+            }else{
+                Util.startToast(getContext(),"대화방생성 실패");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendDeleteFriend(String friendId) {

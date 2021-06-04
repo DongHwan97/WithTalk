@@ -78,7 +78,6 @@ public class DataAdapter {
 
         List userList = new ArrayList<Friend>();
         Friend friend = null;
-
         Cursor mCur = mDb.rawQuery(sql, null);
         if (mCur != null) {
             while(mCur.moveToNext()) {

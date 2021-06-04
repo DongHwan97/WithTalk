@@ -51,7 +51,7 @@ public class groupChatRoomActivity extends AppCompatActivity {
         String friendId = idIntent.getStringExtra("friendId");
         Intent idIntent2 = getIntent();
         String friendList = idIntent2.getStringExtra("friendList");
-        FriendList.chatRoomId = idIntent2.getStringExtra("chatRoomId");
+        FriendList.chatRoomNo = idIntent2.getStringExtra("chatRoomNo");
         Intent ttsIntent = getIntent();
         String ttsName = ttsIntent.getStringExtra("ttsName");
 
@@ -298,10 +298,16 @@ public class groupChatRoomActivity extends AppCompatActivity {
         sb.append("\"type\":\"" + "chat" + "\",");
         sb.append("\"method\":\"" + "sendChat" + "\",");
         sb.append("\"senderId\":\"" + MainActivity.id + "\",");
-        sb.append("\"chatRoomNo\":" + FriendList.chatRoomId + ",");
+        sb.append("\"chatRoomNo\":" + FriendList.chatRoomNo + ",");
         sb.append("\"contents\":\"" + message + "\"");
         sb.append("}");
         ConnectSocket.sendQueue.offer((sb.toString()));
         chatContentText.setText(null);
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        FriendList.chatRoomNo ="none";
+    }
+
 }

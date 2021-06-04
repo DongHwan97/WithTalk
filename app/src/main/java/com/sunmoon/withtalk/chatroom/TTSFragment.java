@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.common.FriendList;
 
 import java.util.ArrayList;
 
@@ -109,43 +110,50 @@ public class TTSFragment extends Fragment {
                     message = "클라이언트 에러";
                     break;
                 case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                    message = "권한 허용 필요";
+                    message = "권한 에러";
                     break;
                 case SpeechRecognizer.ERROR_NETWORK:
                     message = "네트워크 에러";
                     break;
                 case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-                    message = "네트웍 타임아웃";
+                    message = "네트워크 에러";
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
-                    message = "찾을 수 없음";
+                    message = "에러";
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     message = "RECOGNIZER가 바쁨";
                     break;
                 case SpeechRecognizer.ERROR_SERVER:
-                    message = "서버가 이상함";
+                    message = "서버 에러";
                     break;
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    message = "말하는 시간초과";
+                    message = "시간초과 에러";
                     break;
                 default:
-                    message = "알 수 없는 오류임";
+                    message = "알 수 없는 오류";
                     break;
             }
-            Toast.makeText(getActivity() , "에러가 발생하였습니다. : " + message,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext() , message+"가 발생했습니다.",Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        public void onResults(Bundle results) {
+        public void onResults(Bundle results) {//음성 인식 결과
             ArrayList<String> result =
                     results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
             for(int i = 0; i < result.size() ; i++){
-                nameView.setText(result.get(i));
-                Intent intent = new Intent(getContext(), ChatActivity.class);
-                intent.putExtra("ttsName", result.get(i));
-                startActivity(intent);
+                String sttResult = result.get(i);
+                nameView.setText(sttResult);
+                Intent intent = new Intent(getContext(), ChatActivity.class);//수정필요
+                for(String key : FriendList.FRIEND_LIST.keySet()){
+                    String friendName = FriendList.FRIEND_LIST.get(key);
+                    if(sttResult.contains(friendName)){
+                        intent.putExtra("friendName", friendName);
+                        startActivity(intent);
+                    }
+                }
+
             }
         }
 

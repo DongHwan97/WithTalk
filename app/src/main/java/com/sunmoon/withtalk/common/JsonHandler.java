@@ -82,27 +82,43 @@ public class JsonHandler {
                                 JSONArray memberIdList = obj.getJSONArray("memberIdList");
                                 StringBuilder memberList_str = new StringBuilder();
                                 int j;
-                                for (j = 0; j < memberIdList.length(); j++) {
-                                    if (!MainActivity.id.equals(memberIdList.getString(j))) {
-                                        memberList_str.append(FriendList.FRIEND_LIST.get(memberIdList.getString(j)));
-                                        if (j < memberIdList.length() - 1) {
-                                            memberList_str.append(", ");
+                                memberList_str.append("{\"memberIdList\":[");
+                                if(memberIdList.length()==2){
+
+                                    for (j = 0; j < memberIdList.length(); j++) {
+                                        if (!MainActivity.id.equals(memberIdList.getString(j))) {
+                                            memberList_str.append("\"");
+                                            memberList_str.append(memberIdList.getString(j));
+                                            memberList_str.append("\"");
                                         }
                                     }
-                                    Log.e("messageReceived: ", memberList_str.toString());
+                                }else{
+                                    for (j = 0; j < memberIdList.length(); j++) {
+                                        if (!MainActivity.id.equals(memberIdList.getString(j))) {
+                                            memberList_str.append(memberIdList.getString(j));
+                                            memberList_str.append("\"");
+                                            if (j < memberIdList.length() - 1) {
+                                                memberList_str.append(", ");
+                                            }
+                                            memberList_str.append("\"");
+                                        }
+                                        Log.e("messageReceived: ", memberList_str.toString());
+                                    }
                                 }
+                                memberList_str.append("]}");
+
                                 lists.add(memberList_str.toString());
-                                lists.add(Integer.toString(j));
+                                lists.add(Integer.toString(memberIdList.length()));
                             }
                         }
 
                         break;
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+
         return lists;
     }
 }

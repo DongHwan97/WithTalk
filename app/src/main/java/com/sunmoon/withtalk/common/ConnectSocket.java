@@ -19,7 +19,7 @@ import java.util.Queue;
 public class ConnectSocket extends Activity {
     public static final String SERVER_IP = "192.168.25.55";
     public static final int SERVER_PORT = 5050;
-    public static final int READ_BUFFER = 1024;
+    public static final int READ_BUFFER = 10000;
 
     public static SocketChannel socketChannel;
 
@@ -28,6 +28,8 @@ public class ConnectSocket extends Activity {
 
     public static Queue<String> receiveQueue = new LinkedList<>();
     public static Queue<String> sendQueue = new LinkedList<>();
+    public static Queue<String> toChatQueue = new LinkedList<>();
+
 
     public ConnectSocket() {
         this.startClient();
@@ -70,13 +72,34 @@ public class ConnectSocket extends Activity {
                 byteBuffer.flip();
                 Charset charset = Charset.forName("UTF-8");
                 String data = charset.decode(byteBuffer).toString();
-
+                JSONObject json;
                 received_msg =  data;
+                String contents, sendTime, chatRoomNo, senderId, isRead="false";
+                if (received_msg.contains("sendChat")){
 
-                // 1. 내부 DB에 넣기
+                    json = new JSONObject(received_msg);
+                    contents = json.getString("contents");
+                    sendTime = json.getString("sendTime");
+                    chatRoomNo = json.getString("chatRoomNo");
+                    senderId = json.getString("senderId");
 
-                // 2. 송신ID == chatRoomID ? 현재 채팅방에 보여줌 : 안보여줌
-                receiveQueue.offer(received_msg);
+                    if(chatRoomNo.equals(FriendList.chatRoomNo)){
+                        isRead="true";
+                        // 1.   현재 채팅방에 보여줌 : 안보여줌
+                        toChatQueue.offer(received_msg);
+                    }
+                    // 2. 내부 DB에 넣기
+
+
+
+                }else{
+                    receiveQueue.offer(received_msg);
+                }
+
+
+
+
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -91,6 +114,7 @@ public class ConnectSocket extends Activity {
             try {
                 if (sendQueue.peek() != null) {
                     String data = sendQueue.poll();
+                    Log.e("tt1",data);
                     Charset charset = Charset.forName("UTF-8");
                     ByteBuffer byteBuffer = charset.encode(data);
                     socketChannel.write(byteBuffer);
@@ -108,104 +132,6 @@ public class ConnectSocket extends Activity {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static class JsonHandler {
-        static JSONObject json;
-        static String method;
-        static ArrayList<String> lists;
-        static JSONArray jsonArray;
-
-        public static ArrayList<String> messageReceived() {
-            if (receiveQueue.peek() != null) {
-                String result = receiveQueue.poll();
-                try {
-                    json = new JSONObject(result);
-                    Log.d("응답", result.toString());
-
-                    method = json.getString("method");
-
-                    switch (method) {
-                        case "login":
-                        case "signUp":
-                        case "auth":
-                        case "resetPassword":
-                        case "logout":
-                        case "delete":
-                        case "insertFriend":
-                        case "exit":
-                            lists = new ArrayList<>();
-                            lists.add(json.getString("status"));
-
-                            break;
-                        case "findId":
-                            lists = new ArrayList<>();
-                            lists.add(json.getString("status"));
-                            lists.add(json.getString("id"));
-
-                            break;
-                        case "selectAllFriend":
-                            lists = new ArrayList<>();
-                            lists.add(json.getString("status"));
-
-                            jsonArray = json.getJSONArray("friendList");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject obj = jsonArray.getJSONObject(i);
-                                lists.add(obj.getString("id"));
-                                lists.add(obj.getString("name"));
-                            }
-
-                            break;
-                        case "searchFriend":
-                            lists = new ArrayList<>();
-                            lists.add(json.getString("status"));
-                            lists.add(json.getString("id"));
-                            lists.add(json.getString("name"));
-                            lists.add(json.getString("phoneNo"));
-                            break;
-                        case "searchRegistFriend":
-                            lists = new ArrayList<>();
-                            lists.add(json.getString("status"));
-
-                            jsonArray = json.getJSONArray("registFriendList");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject obj = jsonArray.getJSONObject(i);
-                                lists.add(obj.getString("id"));
-                                lists.add(obj.getString("name"));
-                            }
-                            break;
-                        case "selectAllChatRoom":
-                            lists = new ArrayList<>();
-                            lists.add(json.getString("status"));
-                            jsonArray = json.getJSONArray("chatRoomList");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject obj = jsonArray.getJSONObject(i);
-                                lists.add(obj.getString("chatRoomNo"));
-                                JSONArray memberIdList = obj.getJSONArray("memberIdList");
-                                StringBuilder memberList_str = new StringBuilder();
-                                int j;
-                                for (j=0; j<memberIdList.length();j++){
-                                    if(!MainActivity.id.equals(memberIdList.getString(j))){
-                                        memberList_str.append(FriendList.FRIEND_LIST.get(memberIdList.getString(j)));
-                                        if (j < memberIdList.length()-1) {
-                                            memberList_str.append(", ");
-                                        }
-                                    }
-                                    Log.e("messageReceived: ", memberList_str.toString());
-                                }
-                                lists.add(memberList_str.toString());
-                                lists.add(Integer.toString(j));
-                            }
-
-                            break;
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            return lists;
         }
     }
 }

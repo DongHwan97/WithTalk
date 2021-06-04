@@ -17,5 +17,4 @@ public class Util {//보편적으로 사용되는 기술 정의 Toast 메시지
         toast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
         toast.show();
     }
-
 }

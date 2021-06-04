@@ -54,7 +54,7 @@ public class SettingFragment extends Fragment {
     }
 
     public void receiveFromServer() {
-        List<String> lists = ConnectSocket.JsonHandler.messageReceived();
+        List<String> lists = JsonHandler.messageReceived();
 
         String status = lists.get(0);
         if ("r200".equals(status)) {
