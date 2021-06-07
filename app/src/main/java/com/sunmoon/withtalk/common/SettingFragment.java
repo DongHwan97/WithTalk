@@ -35,7 +35,7 @@ public class SettingFragment extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                receiveFromServer();
+
             }
         });
 
@@ -53,14 +53,4 @@ public class SettingFragment extends Fragment {
         ConnectSocket.sendQueue.offer(sb.toString());
     }
 
-    public void receiveFromServer() {
-        List<String> lists = JsonHandler.messageReceived();
-
-        String status = lists.get(0);
-        if ("r200".equals(status)) {
-            Util.startToast(getContext(), "로그아웃");
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            startActivity(intent);
-        }
-    }
 }

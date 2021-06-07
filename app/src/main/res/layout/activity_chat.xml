@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/main_background"
     tools:context=".chatroom.ChatActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,6 +24,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.037" />
+
+        <TextView
+            android:id="@+id/createText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="대화방이 생성되었습니다."
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.682"
+            tools:visibility="gone" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
@@ -35,20 +49,24 @@
             android:id="@+id/chatLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:layout_margin="10dp"
+            android:orientation="vertical"
+            android:padding="20dp" />
     </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/chatContentText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="7dp"
             android:layout_weight="1"
+            android:background="@drawable/white_box"
+            android:padding="10dp"
             android:ems="10"
             android:inputType="textPersonName" />
 
@@ -56,8 +74,8 @@
             android:id="@+id/chatSendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:padding="15dp"
+            android:background="#00FFFFFF"
+            android:padding="10dp"
             android:src="@drawable/send" />
 
     </LinearLayout>

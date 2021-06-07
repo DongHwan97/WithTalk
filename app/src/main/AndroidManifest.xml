@@ -20,8 +20,6 @@
             android:enabled="true"
             android:exported="true"></service>
 
-        <activity android:name=".chatroom.InviteFriendActivity" />
-        <activity android:name=".chatroom.groupChatRoomActivity" />
         <activity
             android:name=".user.LoginActivity"
             android:screenOrientation="portrait">
@@ -50,7 +48,7 @@
             android:name=".user.FindIDActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".user.FindPWActivity"
+            android:name=".user.AuthActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".user.SignUpActivity"

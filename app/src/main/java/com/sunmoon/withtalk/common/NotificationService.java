@@ -10,14 +10,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
 import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.chatroom.ChatRoomList;
+import com.sunmoon.withtalk.friend.FriendList;
 import com.sunmoon.withtalk.user.LoginActivity;
 
 import org.json.JSONException;
@@ -79,7 +77,7 @@ public class NotificationService extends Service {
 
     class myServiceHandler extends Handler {
 
-        public void showNotification(String str){//푸시알림
+        public void showNotification(String friendName, String str){//푸시알림
             builder = null;
             notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -89,7 +87,7 @@ public class NotificationService extends Service {
                 builder = new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID);
             }
 
-            builder.setContentTitle("WithTalk")
+            builder.setContentTitle(friendName)
                     .setContentText(str)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setAutoCancel(true);
@@ -102,19 +100,20 @@ public class NotificationService extends Service {
             Intent intent = new Intent(NotificationService.this, LoginActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
-            JSONObject j = (JSONObject)msg.obj;
-            String contents = "";
-
             try {
+                JSONObject j = (JSONObject)msg.obj;
+                String friendID = j.getString("senderId");
 
-                if (MainActivity.id.equals(j.getString("senderId"))) {
-                    return;
-                }
-                contents = j.getString("contents");
-            } catch (JSONException e) {
+                if (MainActivity.id.equals(friendID)) { return; }
+
+                String contents = j.getString("contents");
+                String friendName = FriendList.FRIEND_LIST.get(friendID);
+
+                this.showNotification(friendName, contents);
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            this.showNotification(contents);
         }
     }
 }

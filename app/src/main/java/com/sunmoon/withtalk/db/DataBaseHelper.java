@@ -1,12 +1,9 @@
-package com.sunmoon.withtalk.common;
+package com.sunmoon.withtalk.db;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -22,7 +19,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     // TODO : assets 폴더에 있는 경우 "", 그 외 경로기입
     private static String DB_PATH = "";
     // TODO : assets 폴더에 있는 DB명 또는 별도의 데이터베이스 파일이름
-    private static String DB_NAME ="chat2.db";
+    private static String DB_NAME = "chat4.db";
 
     private SQLiteDatabase mDataBase;
     private final Context mContext;

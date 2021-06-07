@@ -1,7 +1,6 @@
 package com.sunmoon.withtalk.common;
 
 import android.content.Context;
-import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
 
 

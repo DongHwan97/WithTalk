@@ -13,8 +13,11 @@ import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.sunmoon.withtalk.R;
-import com.sunmoon.withtalk.common.ViewPagerAdapter;
+import com.sunmoon.withtalk.db.DataAdapter;
+import com.sunmoon.withtalk.db.MessageDB;
+import com.sunmoon.withtalk.friend.FriendList;
 
+import java.util.List;
 import java.util.Locale;
 
 
@@ -65,11 +68,12 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 switch (position){
 
-                    case 0: tts.speak("메시지 확인", TextToSpeech.QUEUE_FLUSH, null);
+                    case 0: tts.speak("음성 인식 화면", TextToSpeech.QUEUE_FLUSH, null);
+                            readUnreadMsg();
                             break;
-                    case 1: tts.speak("친구목록", TextToSpeech.QUEUE_FLUSH, null);
+                    case 1: tts.speak("친구 목록", TextToSpeech.QUEUE_FLUSH, null);
                             break;
-                    case 2: tts.speak("채팅목록", TextToSpeech.QUEUE_FLUSH, null);
+                    case 2: tts.speak("대화방 목록", TextToSpeech.QUEUE_FLUSH, null);
                             break;
                     case 3: tts.speak("설정", TextToSpeech.QUEUE_FLUSH, null);
                             break;
@@ -83,6 +87,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void readUnreadMsg(){
+        DataAdapter mDbHelper = new DataAdapter(this);
+        mDbHelper.createDatabase();
+        mDbHelper.open();
+        List<MessageDB> list = mDbHelper.selectUnReadMessage();
+        MessageDB messageDB = new MessageDB();
+
+        if (list.size() != 0) {
+            for (int i = 0; i < list.size(); i++) {
+                messageDB = list.get(i);
+                String senderId = messageDB.getSenderId();
+                String contents = messageDB.getContents();
+                String isRead = messageDB.getIsRead();
+                String sendTime = messageDB.getSendTime();
+                tts.speak(FriendList.FRIEND_LIST.get(senderId)+"님이"+sendTime+"에"+contents,TextToSpeech.QUEUE_ADD,null);
+            }
+        }else{
+            tts.speak("안 읽은 메시지가 없습니다. 대화하고 싶은 상대를 말씀해주세요.",TextToSpeech.QUEUE_ADD,null);
+        }
+
+
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -91,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
             tts.shutdown();
         }
     }
-
     private long time= 0;
 
     @Override

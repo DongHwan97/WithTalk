@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,9 +21,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.sunmoon.withtalk.R;
-import com.sunmoon.withtalk.common.FriendList;
+import com.sunmoon.withtalk.friend.FriendList;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class TTSFragment extends Fragment {
@@ -31,6 +33,7 @@ public class TTSFragment extends Fragment {
     ConstraintLayout constView;
     Intent intent;
     SpeechRecognizer speechRecognizer;
+    TextToSpeech tts;
 
     public static TTSFragment newInstance() {
         TTSFragment fragment = new TTSFragment();
@@ -44,6 +47,17 @@ public class TTSFragment extends Fragment {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_tts, container, false);
         nameView = (TextView)rootView.findViewById(R.id.nameView);
         constView = (ConstraintLayout)rootView.findViewById(R.id.constView);
+        tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status== TextToSpeech.SUCCESS){
+                    tts.setLanguage(Locale.KOREAN);
+                }else{
+                    Log.e("TTS", "TTS생성 실패");
+                }
+            }
+        });
+
         return rootView;
     }
 
@@ -142,17 +156,23 @@ public class TTSFragment extends Fragment {
             ArrayList<String> result =
                     results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-            for(int i = 0; i < result.size() ; i++){
+
+            A:for(int i = 0; i < result.size() ; i++){
                 String sttResult = result.get(i);
                 nameView.setText(sttResult);
-                Intent intent = new Intent(getContext(), ChatActivity.class);//수정필요
+                Intent intent = new Intent(getContext(), ChatActivity.class);
                 for(String key : FriendList.FRIEND_LIST.keySet()){
                     String friendName = FriendList.FRIEND_LIST.get(key);
-                    if(sttResult.contains(friendName)){
+
+                    if(sttResult.replace(" ", "").contains(friendName)){
+
                         intent.putExtra("friendName", friendName);
+                        FriendList.chatRoomNo = ChatRoomList.CHATROOMLIST_DM.get(friendName);
                         startActivity(intent);
+                        break A;
                     }
                 }
+                tts.speak(sttResult +  ", 에서 친구를 인식하지 못했어요 다시 말해주세요",TextToSpeech.QUEUE_FLUSH,null);
 
             }
         }

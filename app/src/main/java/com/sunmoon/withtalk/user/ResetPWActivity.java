@@ -1,6 +1,7 @@
 package com.sunmoon.withtalk.user;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,15 +10,17 @@ import android.widget.EditText;
 
 import com.sunmoon.withtalk.R;
 import com.sunmoon.withtalk.common.ConnectSocket;
-import com.sunmoon.withtalk.common.JsonHandler;
 import com.sunmoon.withtalk.common.Util;
 
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ResetPWActivity extends Activity {
 
     EditText newPWText, newPWConfirmText;
     Button resetPWButton;
+
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +30,6 @@ public class ResetPWActivity extends Activity {
         newPWText = findViewById(R.id.newPWText);
         newPWConfirmText = findViewById(R.id.newPWConfirmText);
         resetPWButton = findViewById(R.id.resetPWButton);
-
         resetPWButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -35,21 +37,58 @@ public class ResetPWActivity extends Activity {
                 String confirmPw = newPWConfirmText.getText().toString();
                 Intent intent = getIntent();
                 String id = intent.getStringExtra("id");
-
                 if (pw.equals(confirmPw) && (pw.length() > 7)) {
                     sendToServer(id, pw);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    receiveFromServer();
                 } else {
                     Util.startToast(getApplicationContext(), "비밀번호가 일치하지 않거나 8자리 이상이 아닙니다.");
                 }
             }
         });
+        this.mContext = getBaseContext();
+        messaging.start();
     }
+
+    Thread messaging = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            String receivedMessage;
+            JSONObject jsonObject;
+
+            try {while(!Thread.currentThread().isInterrupted()) {
+                receivedMessage = ConnectSocket.receiveQueue.peek();
+
+                Thread.sleep(100);
+                if (receivedMessage != null) {
+                    jsonObject = new JSONObject(receivedMessage);
+
+                    if (jsonObject.getString("method").equals("resetPassword")) {
+                        ConnectSocket.receiveQueue.poll();
+                        if (jsonObject.getString("status").equals("r200")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Util.startToast(mContext, "비밀번호 재설정이 성공하였습니다.");
+
+                                    onBackPressed();
+                                }
+                            });
+                            messaging.interrupt();
+
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Util.startToast(mContext, "비밀번호 재설정 실패 !");
+                                }
+                            });
+                        }
+                    }
+                }
+            }} catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
 
     public void sendToServer(String id, String pw) {
         StringBuilder sb = new StringBuilder();
@@ -59,23 +98,6 @@ public class ResetPWActivity extends Activity {
         sb.append("\"id\":\"" + id + "\",");
         sb.append("\"newPassword\":\"" + pw + "\"");
         sb.append("}");
-
         ConnectSocket.sendQueue.offer(sb.toString());
-    }
-
-    public void receiveFromServer() {
-        List<String> lists = JsonHandler.messageReceived();
-        String status = lists.get(0);
-        if ("r200".equals(status)) {
-            Util.startToast(this, "비밀번호 재설정이 성공하였습니다.");
-            moveActivity(LoginActivity.class);
-        } else {
-            Util.startToast(this, "비밀번호 재설정 실패 !");
-        }
-    }
-
-    private void moveActivity(Class c) {
-        Intent intent = new Intent(this, c);
-        startActivity(intent);
     }
 }

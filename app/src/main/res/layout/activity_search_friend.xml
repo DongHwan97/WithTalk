@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/main_background"
     tools:context=".friend.SearchFriendActivity">
 
     <TextView
@@ -18,6 +19,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:orientation="horizontal">
 
         <EditText
@@ -25,16 +27,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/white_box"
+            android:padding="10dp"
             android:ems="10"
             android:hint="친구 이름"
+            android:fontFamily="@font/maplestory_bold"
             android:inputType="textPersonName" />
 
         <ImageButton
             android:id="@+id/searchFriendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:padding="15dp"
+            android:background="#00FFFFFF"
+            android:padding="10dp"
             app:srcCompat="@drawable/search" />
     </LinearLayout>
 

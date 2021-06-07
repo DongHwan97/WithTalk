@@ -37,6 +37,7 @@
             android:background="@drawable/white_box"
             android:hint="새 비밀번호"
             android:inputType="textPassword"
+            android:fontFamily="@font/maplestory_bold"
             android:padding="10dp"/>
 
         <EditText
@@ -47,6 +48,7 @@
             android:background="@drawable/white_box"
             android:hint="새 비밀번호 확인"
             android:inputType="textPassword"
+            android:fontFamily="@font/maplestory_bold"
             android:padding="10dp"/>
 
         <Button
@@ -54,9 +56,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:backgroundTint="#000000"
             android:text="비밀번호 초기화"
-            android:textColor="#FFFFFF"
+            android:fontFamily="@font/maplestory_bold"
             android:textStyle="bold"
             app:cornerRadius="10dp" />
 

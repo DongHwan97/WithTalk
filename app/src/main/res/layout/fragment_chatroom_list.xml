@@ -25,36 +25,23 @@
             app:layout_constraintVertical_bias="0.037" />
 
         <ImageButton
-            android:id="@+id/moveInviteChatRoom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:background="#FFFFFF"
-            android:src="@drawable/chat_add"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.039" />
-
-        <ImageButton
             android:id="@+id/chatRoomListRefreshButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:layout_marginEnd="14dp"
-            android:layout_marginBottom="73dp"
-            android:background="#FFFFFF"
+            android:layout_marginEnd="10dp"
+            android:background="#00ffffff"
             android:src="@drawable/refresh"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/moveSearchChatRoom"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.039" />
 
         <ImageButton
             android:id="@+id/moveSearchChatRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="48dp"
-            android:background="#FFFFFF"
+            android:layout_marginEnd="10dp"
+            android:background="#00ffffff"
             android:src="@drawable/search"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

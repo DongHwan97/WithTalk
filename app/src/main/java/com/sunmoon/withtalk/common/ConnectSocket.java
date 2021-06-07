@@ -1,11 +1,16 @@
 package com.sunmoon.withtalk.common;
 
-import android.app.Activity;
+
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import org.json.JSONArray;
+
+import com.sunmoon.withtalk.db.DataAdapter;
+import com.sunmoon.withtalk.db.MessageDB;
+import com.sunmoon.withtalk.friend.FriendList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +19,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -25,37 +29,22 @@ public class ConnectSocket extends Thread {
 
     public static SocketChannel socketChannel;
 
-    String received_msg;
+    public static Context mContext;
 
+    String received_msg;
 
     public static Queue<String> receiveQueue = new LinkedList<>();
     public static Queue<String> sendQueue = new LinkedList<>();
     public static Queue<String> toChatQueue = new LinkedList<>();
 
+
+
     Handler handler;
-    boolean isRun = true;
 
     public ConnectSocket(Handler handler) {
-        try {
-            this.handler = handler;
-            socketChannel = SocketChannel.open();
-            socketChannel.configureBlocking(true);
-            socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
-        } catch (Exception e) {
-            return;
-        }
 
-    }
+        this.handler = handler;
 
-    public ConnectSocket() {
-        startClient();
-
-    }
-
-    public void stopForever(){
-        synchronized (this) {
-            this.isRun = false;
-        }
     }
 
     @Override
@@ -82,30 +71,11 @@ public class ConnectSocket extends Thread {
         }).start();
     }
 
-    void startClient() {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    socketChannel = SocketChannel.open();
-                    socketChannel.configureBlocking(true);
-                    socketChannel.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
-                } catch (Exception e) {
-                    return;
-                }
-                receive();
-            }
-        }.start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                send();
-            }
-        }).start();
-    }
-
     void receive() {
+
+        DataAdapter mDbHelper = new DataAdapter(mContext);
+        mDbHelper.createDatabase();
+        mDbHelper.open();
         while (true) {
             try {
                 ByteBuffer byteBuffer = ByteBuffer.allocate(READ_BUFFER);
@@ -113,57 +83,58 @@ public class ConnectSocket extends Thread {
                 int byteCount = socketChannel.read(byteBuffer);
 
                 if (byteCount == -1) {
-                    throw new IOException();
+                    //throw new IOException();
+                    continue;
                 }
 
                 byteBuffer.flip();
                 Charset charset = Charset.forName("UTF-8");
                 String data = charset.decode(byteBuffer).toString();
-                JSONObject json;
+
                 received_msg =  data;
-                String contents, sendTime, chatRoomNo, senderId, isRead="false";
-                if (received_msg.contains("sendChat")){
+
+                int seqNo, chatRoomNo;
+                String contents, sendTime, senderId, isRead="false";
+
+                JSONObject json = new JSONObject(received_msg);
 
 
-                    json = new JSONObject(received_msg);
+                if (json.getString("method").equals("sendChat")){
+                    seqNo = json.getInt("seqNo");
                     contents = json.getString("contents");
                     sendTime = json.getString("sendTime");
-                    chatRoomNo = json.getString("chatRoomNo");
+                    chatRoomNo = json.getInt("chatRoomNo");
                     senderId = json.getString("senderId");
 
                     Message message = handler.obtainMessage() ;
-
-                    // fill the message object.
                     message.obj = json;
+                    this.handler.sendMessage(message);
 
-                    // send message object.
-                    this.handler.sendMessage(message) ;
-
-                    if(chatRoomNo.equals(FriendList.chatRoomNo)){
+                    if(FriendList.chatRoomNo != null && FriendList.chatRoomNo.equals(""+chatRoomNo)){
                         isRead="true";
                         // 1.   현재 채팅방에 보여줌 : 안보여줌
                         toChatQueue.offer(received_msg);
                     }
                     // 2. 내부 DB에 넣기
 
+                    MessageDB messageDB = new MessageDB(seqNo, senderId, contents, sendTime, chatRoomNo, isRead);
+                    mDbHelper.insertMessage(messageDB);
 
+                    // db 닫기
 
-
-                }else{
+                } else {
                     receiveQueue.offer(received_msg);
                 }
 
-
-
-
-
-
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 stopClient();
                 break;
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
+        mDbHelper.close();
     }
 
     void send() {
@@ -171,7 +142,6 @@ public class ConnectSocket extends Thread {
             try {
                 if (sendQueue.peek() != null) {
                     String data = sendQueue.poll();
-                    Log.e("tt1",data);
                     Charset charset = Charset.forName("UTF-8");
                     ByteBuffer byteBuffer = charset.encode(data);
                     socketChannel.write(byteBuffer);

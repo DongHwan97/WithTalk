@@ -37,6 +37,7 @@
             android:layout_margin="5dp"
             android:background="@drawable/white_box"
             android:hint="이름"
+            android:fontFamily="@font/maplestory_bold"
             android:padding="10dp"/>
 
         <EditText
@@ -46,6 +47,7 @@
             android:layout_margin="5dp"
             android:background="@drawable/white_box"
             android:hint="연락처"
+            android:fontFamily="@font/maplestory_bold"
             android:padding="10dp"/>
 
         <TextView
@@ -68,6 +70,7 @@
             android:layout_margin="5dp"
             android:text="아이디 찾기"
             android:textStyle="bold"
+            android:fontFamily="@font/maplestory_bold"
             app:cornerRadius="10dp" />
     </LinearLayout>
 

@@ -7,7 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -17,11 +18,10 @@ import android.widget.TextView;
 
 import com.sunmoon.withtalk.R;
 import com.sunmoon.withtalk.chatroom.ChatActivity;
-import com.sunmoon.withtalk.common.ChatRoomList;
+import com.sunmoon.withtalk.chatroom.ChatRoomList;
 import com.sunmoon.withtalk.common.ConnectSocket;
 import com.sunmoon.withtalk.common.MainActivity;
 import com.sunmoon.withtalk.common.Util;
-import com.sunmoon.withtalk.common.JsonHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +35,9 @@ public class SearchFriendActivity extends AppCompatActivity {
     LinearLayout inflateLayout;
     View listLayout;
 
+    LayoutInflater mInfater;
+    Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,67 +45,94 @@ public class SearchFriendActivity extends AppCompatActivity {
         inflateLayout = findViewById(R.id.searchFriendLayout);
         searchFriendButton = findViewById(R.id.searchFriendButton);
         searchFriendEdit = findViewById(R.id.searchFriendEdit);
+        mInfater = getLayoutInflater();
 
-        String senderId = MainActivity.id;
+        searchFriendEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchFriendButton.performClick();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         searchFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 inflateLayout.removeAllViews();
+
                 String friendName = searchFriendEdit.getText().toString();//검색 데이터 전송 받고
-                if ((friendName.length() > 0)) {
-                    sendSearchFriend(senderId, friendName);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                for (String key : FriendList.FRIEND_LIST.keySet()) {
+                    if (FriendList.FRIEND_LIST.get(key).contains(friendName)) {
+                        String friendId = key;
+                        String name = FriendList.FRIEND_LIST.get(key);
+
+                        listLayout = mInfater.inflate(R.layout.friendlistlayout, inflateLayout, false);
+                        TextView friendNameText = (TextView) listLayout.findViewById(R.id.friendNameText);
+                        friendNameText.setText(name);
+                        inflateLayout.addView(listLayout);
+                        listLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+                                showDialog(friendId, name);
+                                return true;
+                            }
+                        });
                     }
-                    receiveSearchFriend();
-                } else {
-                    Util.startToast(getApplicationContext(), "이름을 입력해 주세요");
                 }
             }
         });
+
+        this.mContext = getApplicationContext();
+        messaging.start();
     }
 
-    public void sendSearchFriend(String senderId, String friendName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"friend\",");
-        sb.append("\"method\":\"searchRegistFriend\",");
-        sb.append("\"senderId\":\"" + senderId + "\",");
-        sb.append("\"searchName\":\"" + friendName + "\"");
-        sb.append("}");
+    Thread messaging = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            String receivedMessage;
 
-        ConnectSocket.sendQueue.offer((sb.toString()));
-    }
+            try {while(!Thread.currentThread().isInterrupted()) {
+                receivedMessage = ConnectSocket.receiveQueue.peek();
 
-    public void receiveSearchFriend() {
-        ArrayList<String> lists = JsonHandler.messageReceived();
-        String status = lists.get(0);
+                Thread.sleep(100);
+                if (receivedMessage != null) {
+                    JSONObject jsonObject = new JSONObject(receivedMessage);
 
-        if ("r200".equals(status)) {
-            for (int i = 1; i < lists.size(); i = i + 2) {
-                String friendId = lists.get(i);
-                String name = lists.get(i + 1);
+                    if (jsonObject.getString("method").equals("delete")) {
+                        ConnectSocket.receiveQueue.poll();
+                        if (jsonObject.getString("status").equals("r200")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    refreshFriendList();
+                                    Util.startToast(mContext, "삭제되었습니다.");
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Util.startToast(mContext, "실패했습니다.");
+                                }
+                            });
+                        }
 
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                listLayout = inflater.inflate(R.layout.friendlistlayout, inflateLayout, false);
-                TextView friendNameText = (TextView) listLayout.findViewById(R.id.friendNameText);
-                friendNameText.setText(name);
-                inflateLayout.addView(listLayout);
-                listLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        showDialog(friendId, name);
-                        return true;
+
                     }
-                });
+                }
+            }} catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
             }
-        } else {
-            Util.startToast(getApplicationContext(), "해당하는 친구가 존재하지 않습니다.");
         }
-    }
+    });
 
     public void showDialog(String friendId, String friendName) {
         final CharSequence[] items = {"1:1 대화", "친구 삭제"};
@@ -117,13 +147,6 @@ public class SearchFriendActivity extends AppCompatActivity {
                         break;
                     case 1:
                         sendDeleteFriend(friendId);
-
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        receiveDeleteFriend(friendId);
                         break;
                 }
             }
@@ -134,16 +157,15 @@ public class SearchFriendActivity extends AppCompatActivity {
 
     public void moveChatRoom(String friendName, String friendId) {
         Intent intent = new Intent(this, ChatActivity.class);
-        if(ChatRoomList.CHATROOMLIST.get(friendId)==null){
+        if(ChatRoomList.CHATROOMLIST_DM.get(friendId)==null){
             createChatRoom(friendId);
         }
-        if(ChatRoomList.CHATROOMLIST.get(friendId)==null){
+        if(ChatRoomList.CHATROOMLIST_DM.get(friendId)==null){
             return;
         }
         intent.putExtra("friendName", friendName);
         intent.putExtra("friendId", friendId);
-        intent.putExtra("chatRoomNo", ChatRoomList.CHATROOMLIST.get(friendId));
-        Log.e( "moveChatRoom: ", "로그입니당"+ChatRoomList.CHATROOMLIST.get(friendId));
+        FriendList.chatRoomNo=ChatRoomList.CHATROOMLIST_DM.get(friendId);
         startActivity(intent);
     }
 
@@ -168,7 +190,6 @@ public class SearchFriendActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // 결과 받기
         String result = ConnectSocket.receiveQueue.poll();
 
         try {
@@ -177,7 +198,7 @@ public class SearchFriendActivity extends AppCompatActivity {
             String status = json.getString("status");
             if ("create".equals(method)&&"r200".equals(status)) {
                 int chatRoomNo = json.getInt("chatRoomNo");
-                ChatRoomList.CHATROOMLIST.put(friendId,(""+chatRoomNo));
+                ChatRoomList.CHATROOMLIST_DM.put(friendId,(""+chatRoomNo));
                 Util.startToast(this,"대화방생성");
 
             }else{
@@ -186,6 +207,21 @@ public class SearchFriendActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void refreshFriendList() {
+        sendSelectAllFriend();
+    }
+
+    public void sendSelectAllFriend() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"type\":\"friend\",");
+        sb.append("\"method\":\"selectAllFriend\",");
+        sb.append("\"id\":\"" + MainActivity.id + "\"");
+        sb.append("}");
+
+        ConnectSocket.sendQueue.offer((sb.toString()));
     }
 
     public void sendDeleteFriend(String friendId) {
@@ -199,15 +235,9 @@ public class SearchFriendActivity extends AppCompatActivity {
         ConnectSocket.sendQueue.offer((sb.toString()));
     }
 
-    public void receiveDeleteFriend(String friendId) {
-        ArrayList<String> lists = JsonHandler.messageReceived();
-        String status = lists.get(0);
-
-        if ("r200".equals(status)) {
-            Util.startToast(this, friendId + "가 삭제되었습니다.");
-        } else {
-            Util.startToast(this, "실패했습니다.");
-        }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        messaging.interrupt();
     }
-
 }

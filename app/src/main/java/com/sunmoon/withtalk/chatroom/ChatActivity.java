@@ -2,15 +2,10 @@ package com.sunmoon.withtalk.chatroom;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 
 import android.Manifest;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -27,15 +22,18 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.sunmoon.withtalk.common.ConnectSocket;
-import com.sunmoon.withtalk.common.FriendList;
+import com.sunmoon.withtalk.db.DataAdapter;
+import com.sunmoon.withtalk.friend.FriendList;
 import com.sunmoon.withtalk.common.MainActivity;
 import com.sunmoon.withtalk.R;
+import com.sunmoon.withtalk.db.MessageDB;
 import com.sunmoon.withtalk.common.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -60,6 +58,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent idIntent = getIntent();
         String friendName = idIntent.getStringExtra("friendName");
+        String friendId = idIntent.getStringExtra("friendId");
 
         mContext = this;
 
@@ -106,15 +105,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        scrollView.post(new Runnable() {//풀스크린일때 새로생기면 아래로 떙김
-            @Override
-            public void run() {
-                scrollView.fullScroll((ScrollView.FOCUS_DOWN));
-            }
-        });
-
         receiveChat.start();
-
+        selectMessage.start();
      }
 
     RecognitionListener recognitionListener = new RecognitionListener() {//STT
@@ -205,6 +197,68 @@ public class ChatActivity extends AppCompatActivity {
     };
 
 
+    Thread selectMessage = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            DataAdapter mDbHelper = new DataAdapter(mContext);
+            mDbHelper.createDatabase();
+            mDbHelper.open();
+
+            mDbHelper.updateReadMessage(FriendList.chatRoomNo);
+
+            List<MessageDB> list = mDbHelper.selectOneChatRoomMessages(FriendList.chatRoomNo);
+            MessageDB messageDB;
+
+            if (list.size() != 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    messageDB = list.get(i);
+
+                    String senderId = messageDB.getSenderId();
+                    String contents = messageDB.getContents();
+                    String sendTime = messageDB.getSendTime();
+                    String isRead = messageDB.getIsRead();
+
+
+                    LinearLayout tLayout = new LinearLayout(mContext);
+
+                    TextView dateText = new TextView(mContext);
+                    TextView contentText = new TextView(mContext);
+                    contentText.setTextSize(24);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dateText.setText(sendTime);
+                            contentText.setText(contents);
+
+                            if ( senderId.equals(MainActivity.id)) {
+                                tLayout.setGravity(Gravity.RIGHT);
+                                tLayout.addView(dateText);
+                                tLayout.addView(contentText);
+
+                            } else {
+                                tLayout.addView(contentText);
+                                tLayout.addView(dateText);
+                            }
+
+                            chatLayout.addView(tLayout);
+
+                            scrollView.post(new Runnable() {//풀스크린일때 새로생기면 아래로 떙김
+                                @Override
+                                public void run() {
+                                    scrollView.fullScroll((ScrollView.FOCUS_DOWN));
+                                }
+                            });
+
+                        }
+                    });
+                }
+            }
+            // db 닫기
+            mDbHelper.close();
+        }
+    });
+
     public void sendChat(String message){
 
         StringBuilder sb = new StringBuilder();
@@ -217,12 +271,15 @@ public class ChatActivity extends AppCompatActivity {
         sb.append("}");
         ConnectSocket.sendQueue.offer((sb.toString()));
         chatContentText.setText(null);
+
     }
 
     Thread receiveChat = new Thread(new Runnable() {
         @Override
         public void run() {
-            while(true){
+            while(!Thread.currentThread().isInterrupted()){
+                try {
+                Thread.sleep(50);
                 if(ConnectSocket.toChatQueue.peek()!=null){
                     String receivedMessage = ConnectSocket.toChatQueue.poll();
                     LinearLayout tLayout = new LinearLayout(mContext);
@@ -231,42 +288,43 @@ public class ChatActivity extends AppCompatActivity {
                     TextView contentText = new TextView(mContext);
                     contentText.setTextSize(24);
 
+                    JSONObject json = new JSONObject(receivedMessage);
+                    String contents = json.getString("contents");
+                    String sendTime = json.getString("sendTime");
+                    String senderId = json.getString("senderId");
+                    tts.speak(contents + " "+sendTime, TextToSpeech.QUEUE_FLUSH, null);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dateText.setText(sendTime);
+                            contentText.setText(contents);
 
-                    try {
-                        JSONObject json = new JSONObject(receivedMessage);
-                        final String contents = json.getString("contents");
-                        final String sendTime = json.getString("sendTime");
-                        final String senderId = json.getString("senderId");
+                            if ( senderId.equals(MainActivity.id)) {
+                                tLayout.setGravity(Gravity.RIGHT);
+                                tLayout.addView(dateText);
+                                tLayout.addView(contentText);
 
-                        //tts.speak(contents + " "+sendTime, TextToSpeech.QUEUE_FLUSH, null); 화면에 들어와있을때만 읽어주자
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dateText.setText(sendTime);
-                                contentText.setText(contents);
-
-                                if ( senderId.equals(MainActivity.id)) {
-                                    tLayout.setGravity(Gravity.RIGHT);
-                                    tLayout.addView(dateText);
-                                    tLayout.addView(contentText);
-
-                                } else {
-                                    tLayout.addView(contentText);
-                                    tLayout.addView(dateText);
-                                }
-
-                                chatLayout.addView(tLayout);
-
+                            } else {
+                                tLayout.addView(contentText);
+                                tLayout.addView(dateText);
                             }
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
+                            chatLayout.addView(tLayout);
+
+                            scrollView.post(new Runnable() {//풀스크린일때 새로생기면 아래로 떙김
+                                @Override
+                                public void run() {
+                                    scrollView.fullScroll((ScrollView.FOCUS_DOWN));
+                                }
+                            });
+                        }
+                    });
+                }} catch (JSONException | InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
     });
-
 
     @Override
     public void onBackPressed() {
@@ -274,7 +332,8 @@ public class ChatActivity extends AppCompatActivity {
         if(receiveChat.isAlive()){
             receiveChat.interrupt();
         }
-        FriendList.chatRoomNo ="none";
+        ConnectSocket.toChatQueue.clear();
+        FriendList.chatRoomNo ="0";
     }
     @Override
     protected void onDestroy() {

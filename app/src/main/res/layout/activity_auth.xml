@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_color"
     android:orientation="vertical"
-    tools:context=".user.FindPWActivity">
+    tools:context=".user.AuthActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="비밀번호 찾기"
+            android:text="본인인증"
             android:textSize="36sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -30,38 +30,42 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/findPWIDText"
+            android:id="@+id/authIDText"
             android:layout_width="300dp"
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@drawable/white_box"
             android:hint="아이디"
+            android:fontFamily="@font/maplestory_bold"
             android:padding="10dp"/>
 
         <EditText
-            android:id="@+id/findPWNameText"
+            android:id="@+id/authNameText"
             android:layout_width="300dp"
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@drawable/white_box"
             android:hint="이름"
+            android:fontFamily="@font/maplestory_bold"
             android:padding="10dp"/>
 
         <EditText
-            android:id="@+id/findPWPhoneText"
+            android:id="@+id/authPhoneText"
             android:layout_width="300dp"
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@drawable/white_box"
             android:hint="연락처"
+            android:fontFamily="@font/maplestory_bold"
             android:padding="10dp"/>
 
         <Button
-            android:id="@+id/findPWButton"
+            android:id="@+id/authButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="비밀번호 찾기"
+            android:fontFamily="@font/maplestory_bold"
+            android:text="인증"
             android:textStyle="bold"
             app:cornerRadius="10dp" />
     </LinearLayout>
